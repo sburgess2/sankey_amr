@@ -1,0 +1,220 @@
+---
+bibliography: references.bib
+csl: nature-communications.csl
+nocite: |
+   @*
+---
+
+## Sankey diagram to visualise *E. coli* resistance genes
+
+Here are the steps I used to generate my Sankey diagram.
+
+### Packages
+
+If you haven't done so already install the packages networkD3, tidyverse, htmlwidgets, manipulateWidget and webshot2.
+
+Load the libraries
+
+```{r libraries, message = FALSE, warning = FALSE, output = FALSE}
+library(networkD3)
+library(tidyverse)
+library(htmlwidgets)
+library(manipulateWidget)
+library(webshot2)
+```
+
+### Read in and prepare data
+
+The following code was adapted from <https://r-graph-gallery.com/321-introduction-to-interactive-sankey-diagram-2.html> (and a little bit of help from ChatGPT when I had trouble setting up the groups). Two data frames are needed to generate a Sankey diagram. One for the links and the other for the nodes. In the R Graph Gallery example, the links data frame was generated using the data.frame() function. Initially I tried this, but then it became too messy when I was adding multiple antibiotic classes so I read in a csv file.
+
+```{r readcsv}
+links <- read_csv("data/resistance_mechanisms.csv")
+```
+
+My csv file contains three columns: source, target, value. Source is the origin of each data link. Given, my Sankey diagram has three columns, source is both the name of the of the antibiotic classes and the mechanisms. Target is the endpoint of each data link. This contains the mechanisms and resistance genes. Value is the thickness of each link.
+
+```{r}
+#First six lines of my data frame
+head(links)
+
+#Last six lines of my data frame
+tail(links)
+```
+
+The \` in some of my gene names is read in as ? so first I replaced the ? with ′
+
+```{r}
+links$target <- str_replace_all(links$target, "\\?", "′") 
+```
+
+Next I created a one column data frame for all the nodes. The column name is labelled name and the observations are all the unique names from source and target.
+
+```{r}
+nodes <- data.frame(
+  name = unique(c(as.character(links$source), as.character(links$target))))
+```
+
+A second column was added to the nodes data frame called group. This will be used to colour the Sankey diagram links by group.
+
+```{r}
+# Grouping
+nodes$group <- case_when(
+  nodes$name == "Aminoglycosides" ~ "Aminoglycosides",
+  nodes$name == "Fluoroquinolones" ~ "Fluoroquinolones",
+  nodes$name == "Tetracyclines" ~ "Tetracyclines",
+  nodes$name == "Phenicols" ~ "Phenicols",
+  nodes$name == "Sulfonamides & Trimethoprim" ~ "Sulfonamides",
+  nodes$name == "Nitrofurans" ~ "Nitrofurans",
+  nodes$name == "Macrolides" ~ "Macrolides",
+  nodes$name %in% c("aac(3′)", "aadA", "aadB", "aadD",
+                    "aph(3′)", "aphA15", "rrsH*", "rsmG*") ~ "Aminoglycosides",
+  nodes$name %in% c("gyrA*", "gyrB*", "parC*", "parE*", "qep", "qnr", "oqxAB") ~ "Fluoroquinolones",
+  nodes$name %in% c("tetX", "tetM", "tetW", "tetA", "tetB", "tetC", "tetD") ~ "Tetracyclines",
+  nodes$name %in% c("catB", "catII", "cmlA", "floR") ~ "Phenicols",
+  nodes$name %in% c("dfr", "folP*", "sul1", "sul2", "sul3", "sul4") ~ "Sulfonamides",
+  nodes$name %in% c("nfsA*", "nfsB*", "ahpF*", "ribB*", "ribE*") ~ "Nitrofurans",
+  nodes$name %in% c("ermA", "ermB", "ermC", "ereA", "mphA", "mphB", "mefA", "mefB", "msrA", "msrD") ~ "Macrolides",
+  TRUE ~ "Other"
+)
+```
+
+Two additional columns were added, which contain an index for both the source and the target. The match function is used to match the position of the values that are being matched. As I understand it networkD3 uses an index system starting from 0, whereas base R starts from 1, hence the -1 is needed to generate an index system suitable for the function networkD3::sankeyNetwork().
+
+```{r}
+# ID mapping
+links$IDsource <- match(links$source, nodes$name) - 1
+links$IDtarget <- match(links$target, nodes$name) - 1
+
+links
+```
+
+Similar to the nodes data frame a group column was also added to the links data frame.
+
+```{r}
+#Generate vector containing the group names for all the antibiotic classes
+class <- c("Aminoglycosides", "Fluoroquinolones", "Tetracyclines", "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans", "Macrolides")
+#Generate vector containing the group names for all the mechanisms
+mechanisms <- c("Enzymatic inactivation", "Target alteration", "Target protection", "Efflux pump", "Target replacement", "Reduced prodrug activation")
+
+# Assign groups
+links$group <- case_when(
+  links$source %in% class ~ nodes$group[match(links$source, nodes$name)],
+  links$source %in% mechanisms ~ nodes$group[match(links$target, nodes$name)],
+  TRUE ~ "Other")
+```
+
+Lastly I generated my colour scale. Here (as I understand it) because networkD3 uses Javascript code the colour scale also has to be written in Javascript. '.domain' defines each group that I want to apply each colour to.
+
+```{r colour}
+my_color <- 'd3.scaleOrdinal()
+  .domain(["Aminoglycosides", "Fluoroquinolones", "Tetracyclines", 
+           "Phenicols", "Sulfonamides", "Nitrofurans", "Macrolides", "Other"])
+  .range(["#90CAF9", "#A5D6A7", "#D1C4E9", "#ffffb3", "#fb8072", "#fdb462", "#F8BBD0FF", "#E0E0E0"]);'
+```
+
+### Sankey diagram
+
+Now for the fun part generating the Sankey diagram.
+
+```{r sankey1, message = FALSE}
+# Sankey plot
+q <- sankeyNetwork(
+  Links = links, Nodes = nodes,
+  Source = "IDsource", Target = "IDtarget",
+  Value = "value", NodeID = "name",
+  NodeGroup = "group", LinkGroup = "group",
+  colourScale = my_color,
+  width = 900, height = 900,
+  nodeWidth = 60
+)
+q
+```
+
+There are a few things I don't like. The font size and type, as well as having the resistance genes on top of the links.
+
+Here I've adjusted these three things within the sankeyNetwork() function using the arguments fontSize, fontFamily, and sinksRight.
+
+```{r sankey2, message = FALSE}
+# Sankey plot
+p <- sankeyNetwork(
+  Links = links, Nodes = nodes,
+  Source = "IDsource", Target = "IDtarget",
+  Value = "value", NodeID = "name",
+  NodeGroup = "group", LinkGroup = "group",
+  colourScale = my_color,
+  fontSize = 12, fontFamily = "Verdana", nodeWidth = 60, sinksRight = FALSE, width = 900, height = 900
+)
+p
+```
+
+It's still not quite what I'd like. To my knowledge that is pretty much all that can be adjusted within the SankeyNetwork() function. However, because the Sankey Network is an htmlwidget (you can check this using the class function) you can use the htmlwidge package to append labels.
+
+```{r class}
+class(p)
+```
+
+### Using htmlwidgets to adjust the Sankey diagram
+
+The code below was adapted from the tutorial <https://www.geeksforgeeks.org/r-language/how-to-add-axis-labels-using-networkd3-in-r/> and the response on this stack overflow post <https://stackoverflow.com/questions/50132459/how-to-add-title-to-a-networkd3-visualisation-when-saving-as-a-web-page>
+
+Here I've added a title to my diagram.
+
+```{r prepend}
+#prepend title
+p1 <- htmlwidgets::prependContent(p, htmltools::tags$h1(htmltools::HTML("Resistance genes in <em>Escherichia coli</em>"),
+  style = "text-align:center; color:#1b2422; font-size:18px; font-family:Verdana;"))
+p1
+```
+
+Here I've added a footnote to my diagram.
+
+```{r append}
+#append footnote
+p2 <- htmlwidgets::appendContent(p1, htmltools::tags$p("* Genes with point mutations", style = "text-align:center; color:#666; font-size:12px; font-family:Verdana;"))
+p2
+```
+
+I also wanted to change the font style to bold for the antibiotic classes and italics for the resistance genes. I got a bit of help from ChatGPT for this piece of code.
+
+```{r}
+#The following function was generated using chapgpt
+p3 <- htmlwidgets::onRender(p2, '
+  function(el, x) {
+    const boldNames = [
+      "Aminoglycosides", "Fluoroquinolones", "Tetracyclines",
+      "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans",
+      "Enzymatic inactivation", "Target alteration",
+      "Target protection", "Efflux pump", "Target replacement",
+      "Reduced prodrug activation", "Macrolides"
+    ];
+
+    const italicSubstrings = [
+      "aac", "aad", "aph", "rr", "rsm", "qep", "qnr", "tet", "cat",
+      "gyr", "par", "mdf", "fol", "dfr", "nfs", "cml", "flo", "oqx", "sul",
+      "erm", "ereA", "mph", "mef", "msr", "ahpF", "rib"
+    ];
+
+    d3.select(el)
+      .selectAll(".node text")
+      .style("font-weight", d => boldNames.includes(d.name) ? "bold" : "normal")
+      .style("font-style", d =>
+        italicSubstrings.some(sub => d.name.includes(sub)) ? "italic" : "normal"
+      );
+  }
+')
+
+p3
+```
+
+## Saving the Sankey diagram
+
+If you are trying this code or similar and want to save your plot as a png you will not be able to use ggsave() function because the Sankey Network is an htmlwidget. First save your plot as an html and then take a screenshot using webshot.
+
+```{r, eval = FALSE}
+htmlwidgets::saveWidget(p3, "output/sankey.html", selfcontained = TRUE)
+webshot("output/sankey.html", file = "output/sankey_arg.png", vwidth = 900, vheight = 900)
+```
+
+One thing I haven't been able to work out is how remove the white space on either side and align the footer to the gene name column, when I save the plot as a png. When I tried to use style = "text-align:right" the footnote disappeared off the page in the png. If anyone reading this has any tips please email me or DM on LinkedIn.
+
+Lastly here are some references I used for generating the resistance gene list:
