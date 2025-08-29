@@ -1,0 +1,192 @@
+---
+title: "Sankey Diagrams"
+author: "Sara Burgess"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Sankey Basics
+
+First I tried the example from <https://r-graph-gallery.com/321-introduction-to-interactive-sankey-diagram-2.html>.
+
+
+```{r sankey1}
+# Library
+library(networkD3)
+library(dplyr)
+ 
+# A connection data frame is a list of flows with intensity for each flow
+links <- data.frame(
+  source=c("group_A","group_A", "group_B", "group_C", "group_C", "group_E"), 
+  target=c("group_C","group_D", "group_E", "group_F", "group_G", "group_H"), 
+  value=c(2,3, 2, 3, 1, 3)
+  )
+ 
+# From these flows we need to create a node data frame: it lists every entities involved in the flow
+nodes <- data.frame(
+  name=c(as.character(links$source), 
+  as.character(links$target)) %>% unique()
+)
+ 
+# With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+links$IDsource <- match(links$source, nodes$name)-1 
+links$IDtarget <- match(links$target, nodes$name)-1
+ 
+# Make the Network
+p <- sankeyNetwork(Links = links, Nodes = nodes,
+              Source = "IDsource", Target = "IDtarget",
+              Value = "value", NodeID = "name", 
+              sinksRight=FALSE, nodeWidth = 30)
+p
+```
+
+Next I tried drawing a Sankey diagram illustrating linkages between antibioitic class and resistance gene.
+
+```{r sankey2}
+#load libraries
+library(paletteer)
+
+library(networkD3)
+library(tidyverse)
+library(htmlwidgets)
+library(manipulateWidget)
+library(webshot2)
+
+#Originally I generated the dataframe within R, but when I started adding in multiple classes it got too messy
+links <- read_csv("data/resistance_mechanisms.csv")
+
+#replace text in target column from ? to ′ & text in source column from Sulfonamides_Trimethoprim to Sulfonamides & Trimethoprim
+links$target <- str_replace_all(links$target, "\\?", "′") 
+links$source <- str_replace_all(links$source, "Sulfonamides_Trimethoprim", "Sulfonamides & Trimethoprim")
+
+
+
+nodes <- data.frame(
+  name = unique(c(as.character(links$source), as.character(links$target)))
+)
+
+# Grouping
+nodes$group <- case_when(
+  nodes$name == "Aminoglycosides" ~ "Drug_Aminoglycosides",
+  nodes$name == "Fluoroquinolones" ~ "Drug_Fluoroquinolones",
+  nodes$name == "Tetracyclines" ~ "Drug_Tetracyclines",
+  nodes$name == "Phenicols" ~ "Drug_Phenicols",
+  nodes$name == "Sulfonamides & Trimethoprim" ~ "Drug_Sulfonamides",
+  nodes$name == "Nitrofurans" ~ "Drug_Nitrofurans",
+  nodes$name %in% c("aac(3′)", "aadA", "aadB", "aadD",
+                    "aph(3′)", "aphA15", "rrsH*", "rsmG*") ~ "Drug_Aminoglycosides",
+  nodes$name %in% c("gyrA*", "gyrB*", "parC*", "parE*", "qep", "qnr") ~ "Drug_Fluoroquinolones",
+  nodes$name %in% c("tetX", "tetM", "tetW", "tetA", "tetB", "tetC", "tetD") ~ "Drug_Tetracyclines",
+  nodes$name %in% c("catB", "catII", "cmlA", "floR") ~ "Drug_Phenicols",
+  nodes$name %in% c("dfr", "folP", "sul1", "sul2", "sul3", "sul4", "oqxAB") ~ "Drug_Sulfonamides",
+  nodes$name %in% c("nfsA*", "nfsB*") ~ "Drug_Nitrofurans",
+  TRUE ~ "Other"
+)
+
+
+
+# ID mapping
+links$IDsource <- match(links$source, nodes$name) - 1
+links$IDtarget <- match(links$target, nodes$name) - 1
+
+drugs <- c("Aminoglycosides", "Fluoroquinolones", "Tetracyclines", "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans")
+mechanisms <- c("Enzymatic inactivation", "Target alteration", "Target protection", "Efflux pump", "Target replacement")
+
+# Assign group dynamically
+links$group <- case_when(
+  links$source %in% drugs ~ nodes$group[match(links$source, nodes$name)],
+  links$source %in% mechanisms ~ nodes$group[match(links$target, nodes$name)],
+  TRUE ~ "Other")
+
+
+my_color <- 'd3.scaleOrdinal()
+  .domain(["Drug_Aminoglycosides", "Drug_Fluoroquinolones", "Drug_Tetracyclines", 
+           "Drug_Phenicols", "Drug_Sulfonamides", "Drug_Nitrofurans", "Other"])
+  .range(["#90CAF9", "#A5D6A7", "#D1C4E9", "#ffffb3", "#fb8072", "#fdb462", "#E0E0E0"]);'
+
+# Sankey plot
+p <- sankeyNetwork(
+  Links = links, Nodes = nodes,
+  Source = "IDsource", Target = "IDtarget",
+  Value = "value2", NodeID = "name",
+  NodeGroup = "group", LinkGroup = "group",
+  colourScale = my_color,
+  fontSize = 12, fontFamily = "Verdana", nodeWidth = 60, sinksRight = FALSE, width = 900, height = 600
+)
+
+p1 <- htmlwidgets::prependContent(p, htmltools::tags$h1(htmltools::HTML("Resistance genes in <em>Escherichia coli</em>"),
+  style = "text-align:center; color:#1b2422; font-size:18px; font-family:Verdana;"))
+p2 <- htmlwidgets::appendContent(p1, htmltools::tags$p("* Genes with point mutations", style = "text-align:center; color:#666; font-size:12px; font-family:Verdana;"))
+
+```
+
+To add a title and footnote as well as change the font style,  I adapted code from the tutorial https://www.geeksforgeeks.org/r-language/how-to-add-axis-labels-using-networkd3-in-r/ and https://stackoverflow.com/questions/50132459/how-to-add-title-to-a-networkd3-visualisation-when-saving-as-a-web-page
+
+```{r}
+#The following function was generated using chapgpt
+p2 <- htmlwidgets::onRender(p2, '
+  function(el, x) {
+    const boldNames = [
+      "Aminoglycosides", "Fluoroquinolones", "Tetracyclines",
+      "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans",
+      "Enzymatic inactivation", "Target alteration",
+      "Target protection", "Efflux pump", "Target replacement"
+    ];
+
+    const italicSubstrings = [
+      "aac", "aad", "aph", "rr", "rsm", "qep", "qnr", "tet", "cat",
+      "gyr", "par", "mdf", "fol", "dfr", "nfs", "cml", "flo", "oqx", "sul"
+    ];
+
+    d3.select(el)
+      .selectAll(".node text")
+      .style("font-weight", d => boldNames.includes(d.name) ? "bold" : "normal")
+      .style("font-style", d =>
+        italicSubstrings.some(sub => d.name.includes(sub)) ? "italic" : "normal"
+      );
+  }
+')
+
+p2
+```
+
+This is how I saved the sankey to a png output.
+
+```{r, eval = FALSE}
+htmlwidgets::saveWidget(p2, "sankey_temp.html", selfcontained = TRUE)
+webshot("sankey_temp.html", file = "output/sankey_arg.png", vwidth = 900, vheight = 700)
+```
+
+
+I am not sure how to get rid of the white space on either side of the Sankey and how to align the footer to the gene names when you output it as a png.
+
+Originally I used this code below for generating the title and footer but then I found the code above that incorporated it into the code used for appending the text to the Sankey Network.
+
+```{r, eval = FALSE}
+titleTx <- htmltools::tags$h1(
+  htmltools::HTML("Resistance genes in <em>Escherichia coli</em>"),
+  style = "text-align:center; color:#1b2422; font-size:18px; font-family:Verdana;"
+)
+
+# Footer
+footerTx <- htmltools::tags$p(
+  "* Genes with point mutations",
+  style = "text-align:right; color:#666; font-size:12px; font-family:Verdana;"
+)
+
+#If you are generating the figure into an Rmarkdown document you could use the code below, but it can't be used for an html output as the Sankey gets changed from a widget to a shiny list.
+# Combine: title + figure (ptitle) + footer
+pfinal <- htmltools::browsable(
+  htmltools::tagList(
+    titleTx,
+    p,     # <-- your actual widget/plotly/figure object
+    footerTx
+  )
+)
+```
+
+

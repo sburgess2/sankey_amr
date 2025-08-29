@@ -1,0 +1,75 @@
+source,target,value
+Aminoglycosides,Enzymatic inactivation,14
+Aminoglycosides,Target alteration,8
+Aminoglycosides,Efflux pump,2
+Fluoroquinolones,Enzymatic inactivation,2
+Fluoroquinolones,Target alteration,8
+Fluoroquinolones,Target protection,2
+Fluoroquinolones,Efflux pump,6
+Tetracyclines,Enzymatic inactivation,2
+Tetracyclines,Target alteration,4
+Tetracyclines,Target protection,4
+Tetracyclines,Efflux pump,8
+Phenicols,Enzymatic inactivation,4
+Phenicols,Efflux pump,4
+Sulfonamides & Trimethoprim,Target alteration,4
+Sulfonamides & Trimethoprim,Target replacement,8
+Sulfonamides & Trimethoprim,Efflux pump,2
+Nitrofurans,Reduced prodrug activation,10
+Macrolides,Enzymatic inactivation,8
+Macrolides,Enzymatic inactivation,12
+Enzymatic inactivation,aac(3?),2
+Enzymatic inactivation,aac(6?),2
+Enzymatic inactivation,aadA,2
+Enzymatic inactivation,aadB,2
+Enzymatic inactivation,aadD,2
+Enzymatic inactivation,aph(3?),2
+Enzymatic inactivation,aphA15,2
+Target alteration,rrnB*,2
+Target alteration,rrsB*,2
+Target alteration,rrsH*,2
+Target alteration,rsmG*,2
+Efflux pump,mdfA,2
+Enzymatic inactivation,aac(6?),2
+Target alteration,gyrA*,2
+Target alteration,gyrB*,2
+Target alteration,parC*,2
+Target alteration,parE*,2
+Target protection,qnr,2
+Efflux pump,qep,2
+Efflux pump,oqxAB,2
+Efflux pump,mdfA,2
+Enzymatic inactivation,tetX,2
+Target alteration,rrsB*,2
+Target alteration,rrnB*,2
+Target protection,tetM,2
+Target protection,tetW,2
+Efflux pump,tetA,2
+Efflux pump,tetB,2
+Efflux pump,tetC,2
+Efflux pump,tetD,2
+Enzymatic inactivation,catB,2
+Enzymatic inactivation,catII,2
+Efflux pump,cmlA,2
+Efflux pump,floR,2
+Target alteration,folP*,2
+Target alteration,dfr,2
+Target replacement,sul1,2
+Target replacement,sul2,2
+Target replacement,sul3,2
+Target replacement,sul4,2
+Reduced prodrug activation,nfsA*,2
+Reduced prodrug activation,nfsB*,2
+Reduced prodrug activation,ahpF*,2
+Reduced prodrug activation,ribB*,2
+Reduced prodrug activation,ribE*,2
+Enzymatic inactivation,ermA,2
+Enzymatic inactivation,ermB,2
+Enzymatic inactivation,ermC,2
+Enzymatic inactivation,ereA,2
+Efflux pump,mphA,2
+Efflux pump,mphB,2
+Efflux pump,mefA,2
+Efflux pump,mefB,2
+Efflux pump,msrA,2
+Efflux pump,msrD,2
