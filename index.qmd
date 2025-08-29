@@ -1,4 +1,8 @@
 ---
+format: 
+  html:
+    embed-resources: true
+    self-contained: true
 bibliography: references.bib
 csl: nature-communications.csl
 nocite: |
