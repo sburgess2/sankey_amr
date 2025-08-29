@@ -31,7 +31,7 @@ library(webshot2)
 
 The following code was adapted from <https://r-graph-gallery.com/321-introduction-to-interactive-sankey-diagram-2.html> (and a little bit of help from ChatGPT when I had trouble setting up the groups). Two data frames are needed to generate a Sankey diagram. One for the links and the other for the nodes. In the R Graph Gallery example, the links data frame was generated using the data.frame() function. Initially I tried this, but then it became too messy when I was adding multiple antibiotic classes so I read in a csv file.
 
-```{r readcsv}
+```{r readcsv, message=FALSE}
 links <- read_csv("data/resistance_mechanisms.csv")
 ```
 
@@ -98,7 +98,7 @@ Similar to the nodes data frame a group column was also added to the links data 
 #Generate vector containing the group names for all the antibiotic classes
 class <- c("Aminoglycosides", "Fluoroquinolones", "Tetracyclines", "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans", "Macrolides")
 #Generate vector containing the group names for all the mechanisms
-mechanisms <- c("Enzymatic inactivation", "Target alteration", "Target protection", "Efflux pump", "Target replacement", "Reduced prodrug activation")
+mechanisms <- c("Enzymatic inactivation", "Target alteration", "Target protection", "Efflux pump", "Target replacement", "Poor prodrug activation")
 
 # Assign groups
 links$group <- case_when(
@@ -189,7 +189,7 @@ p3 <- htmlwidgets::onRender(p2, '
       "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans",
       "Enzymatic inactivation", "Target alteration",
       "Target protection", "Efflux pump", "Target replacement",
-      "Reduced prodrug activation", "Macrolides"
+      "Poor prodrug activation", "Macrolides"
     ];
 
     const italicSubstrings = [
