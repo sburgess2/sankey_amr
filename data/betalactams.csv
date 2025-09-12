@@ -1,0 +1,45 @@
+source,target,value
+NS penicillins,Penicillinases,2
+NS penicillins,IRT,1
+NS penicillins,Oxcillinases,1
+NS penicillins,ESBL,3
+NS penicillins,AmpC,5
+NS penicillins,Carbapenemases,4
+ES penicillins,IRT,1
+ES penicillins,ESBL,3
+ES penicillins,AmpC,5
+ES penicillins,Oxcillinases,1
+ES penicillins,Carbapenemases,4
+1G cephalosporins,Penicillinases,2
+1G cephalosporins,IRT,1
+1G cephalosporins,ESBL,3
+1G cephalosporins,AmpC,5
+1G cephalosporins,Carbapenemases,4
+2G cephalosporins,AmpC,5
+2G cephalosporins,Carbapenemases,4
+3G cephalosporins,AmpC,5
+3G cephalosporins,ESBL,3
+3G cephalosporins,Carbapenemases,4
+4G cephalosporins,ESBL,3
+4G cephalosporins,AmpC,5
+4G cephalosporins,Carbapenemases,4
+Carbapenems,Carbapenemases,4
+Monobactams,ESBL,3
+Monobactams,IRT,1
+Monobactams,Carbapenemases,4
+Penicillinases,blaTEM-1,1
+Penicillinases,blaSHV-1,1
+IRT,blaTEM-30,1
+Oxcillinases,blaOXA-1,1
+ESBL,blaTEM-10,1
+ESBL,blaSHV-12,1
+ESBL,blaCTX-M-15,1
+AmpC,ampC*,1
+AmpC,blaCMY-2,1
+AmpC,blaDHA-1,1
+AmpC,blaFOX-1,1
+AmpC,blaACC-4,1
+Carbapenemases,blaKPC-18,1
+Carbapenemases,blaNDM-1,1
+Carbapenemases,blaVIM-4,1
+Carbapenemases,blaGES-3,1
