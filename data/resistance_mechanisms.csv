@@ -15,7 +15,7 @@ Phenicols,Efflux pump,4
 Sulfonamides & Trimethoprim,Target alteration,4
 Sulfonamides & Trimethoprim,Target replacement,8
 Sulfonamides & Trimethoprim,Efflux pump,2
-Nitrofurans,Reduced prodrug activation,10
+Nitrofurans,Poor prodrug activation,10
 Macrolides,Enzymatic inactivation,8
 Macrolides,Enzymatic inactivation,12
 Enzymatic inactivation,aac(3?),2
@@ -52,17 +52,18 @@ Enzymatic inactivation,catB,2
 Enzymatic inactivation,catII,2
 Efflux pump,cmlA,2
 Efflux pump,floR,2
+Efflux pump,ydhC,2
 Target alteration,folP*,2
 Target alteration,dfr,2
 Target replacement,sul1,2
 Target replacement,sul2,2
 Target replacement,sul3,2
 Target replacement,sul4,2
-Reduced prodrug activation,nfsA*,2
-Reduced prodrug activation,nfsB*,2
-Reduced prodrug activation,ahpF*,2
-Reduced prodrug activation,ribB*,2
-Reduced prodrug activation,ribE*,2
+Poor prodrug activation,nfsA*,2
+Poor prodrug activation,nfsB*,2
+Poor prodrug activation,ahpF*,2
+Poor prodrug activation,ribB*,2
+Poor prodrug activation,ribE*,2
 Enzymatic inactivation,ermA,2
 Enzymatic inactivation,ermB,2
 Enzymatic inactivation,ermC,2
