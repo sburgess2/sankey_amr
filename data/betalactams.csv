@@ -1,4 +1,7 @@
 source,target,value
+ompC*,Reduced permeability,1
+ompF*,Reduced permeability,1
+acrAB-tolC*,Efflux pump,1
 blaTEM-1,Penicillinases,1
 blaSHV-1,Penicillinases,1
 blaTEM-30,IRT,1
@@ -7,6 +10,7 @@ blaTEM-10,ESBL,1
 blaSHV-12,ESBL,1
 blaCTX-M-15,ESBL,1
 blaGES-3,ESBL,1
+blaROB-1,ESBL,1
 ampC*,AmpC,1
 blaCMY-2,AmpC,1
 blaDHA-1,AmpC,1
@@ -15,6 +19,18 @@ blaACC-4,AmpC,1
 blaKPC-18,Carbapenemases,1
 blaNDM-1,Carbapenemases,1
 blaVIM-4,Carbapenemases,1
+Reduced permeability,NS penicillins,1
+Reduced permeability,ES penicillins,1
+Reduced permeability,1G cephalosporins,1
+Reduced permeability,3 G cephalosporins,1
+Reduced permeability,4 G cephalosporins,1
+Reduced permeability,Carbapenems,1
+Efflux pump,NS penicillins,1
+Efflux pump,ES penicillins,1
+Efflux pump,1G cephalosporins,1
+Efflux pump,3 G cephalosporins,1
+Efflux pump,4 G cephalosporins,1
+Efflux pump,Carbapenems,1
 Penicillinases,NS penicillins,1
 Penicillinases,1G cephalosporins,1
 IRT,NS penicillins,1
