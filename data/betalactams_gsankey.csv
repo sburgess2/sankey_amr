@@ -1,0 +1,122 @@
+gene,mechanism,subclass
+ompC*,Reduced permeability,NS penicillins
+ompC*,Reduced permeability,ES penicillins
+ompC*,Reduced permeability,1G cephalosporins
+ompC*,Reduced permeability,3G cephalosporins
+ompC*,Reduced permeability,Carbapenems
+ompF*,Reduced permeability,NS penicillins
+ompF*,Reduced permeability,ES penicillins
+ompF*,Reduced permeability,1G cephalosporins
+ompF*,Reduced permeability,3G cephalosporins
+acrAB-tolC*,Efflux pump,NS penicillins
+acrAB-tolC*,Efflux pump,ES penicillins
+acrAB-tolC*,Efflux pump,1G cephalosporins
+acrAB-tolC*,Efflux pump,3G cephalosporins
+acrAB-tolC*,Efflux pump,4G cephalosporins
+acrAB-tolC*,Efflux pump,Carbapenems
+blaTEM-1,Penicillinases,NS penicillins
+blaTEM-1,Penicillinases,1G cephalosporins
+blaSHV-1,Penicillinases,NS penicillins
+blaSHV-1,Penicillinases,1G cephalosporins
+blaOXA-1,Oxcillinases,NS penicillins
+blaOXA-1,Oxcillinases,ES penicillins
+blaTEM-30,IRT,NS penicillins
+blaTEM-30,IRT,ES penicillins
+blaTEM-30,IRT,1G cephalosporins
+blaTEM-30,IRT,Monobactams
+blaTEM-10,ESBL,NS penicillins
+blaTEM-10,ESBL,ES penicillins
+blaTEM-10,ESBL,1G cephalosporins
+blaTEM-10,ESBL,3G cephalosporins
+blaTEM-10,ESBL,4G cephalosporins
+blaTEM-10,ESBL,Monobactams
+blaSHV-12,ESBL,NS penicillins
+blaSHV-12,ESBL,ES penicillins
+blaSHV-12,ESBL,1G cephalosporins
+blaSHV-12,ESBL,3G cephalosporins
+blaSHV-12,ESBL,4G cephalosporins
+blaSHV-12,ESBL,Monobactams
+blaCTX-M-15,ESBL,NS penicillins
+blaCTX-M-15,ESBL,ES penicillins
+blaCTX-M-15,ESBL,1G cephalosporins
+blaCTX-M-15,ESBL,3G cephalosporins
+blaCTX-M-15,ESBL,4G cephalosporins
+blaCTX-M-15,ESBL,Monobactams
+blaGES-3,ESBL,NS penicillins
+blaGES-3,ESBL,ES penicillins
+blaGES-3,ESBL,1G cephalosporins
+blaGES-3,ESBL,3G cephalosporins
+blaVEB-1,ESBL,NS penicillins
+blaVEB-1,ESBL,ES penicillins
+blaVEB-1,ESBL,1G cephalosporins
+blaVEB-1,ESBL,3G cephalosporins
+blaVEB-1,ESBL,4G cephalosporins
+blaVEB-1,ESBL,Monobactams
+blaROB-1,ESBL,NS penicillins
+blaROB-1,ESBL,ES penicillins
+blaROB-1,ESBL,1G cephalosporins
+blaROB-1,ESBL,3G cephalosporins
+blaTLA-1,ESBL,NS penicillins
+blaTLA-1,ESBL,ES penicillins
+blaTLA-1,ESBL,1G cephalosporins
+blaTLA-1,ESBL,3G cephalosporins
+blaTLA-1,ESBL,4G cephalosporins
+blaTLA-1,ESBL,Monobactams
+ampC*,AmpC,NS penicillins
+ampC*,AmpC,ES penicillins
+ampC*,AmpC,1G cephalosporins
+ampC*,AmpC,2G cephalosporins
+ampC*,AmpC,3G cephalosporins
+ampC*,AmpC,4G cephalosporins
+ampC*,AmpC,Monobactams
+blaCMY-2,AmpC,NS penicillins
+blaCMY-2,AmpC,ES penicillins
+blaCMY-2,AmpC,1G cephalosporins
+blaCMY-2,AmpC,2G cephalosporins
+blaCMY-2,AmpC,3G cephalosporins
+blaCMY-2,AmpC,4G cephalosporins
+blaCMY-2,AmpC,Monobactams
+blaDHA-1,AmpC,NS penicillins
+blaDHA-1,AmpC,ES penicillins
+blaDHA-1,AmpC,1G cephalosporins
+blaDHA-1,AmpC,2G cephalosporins
+blaDHA-1,AmpC,3G cephalosporins
+blaDHA-1,AmpC,4G cephalosporins
+blaDHA-1,AmpC,Monobactams
+blaFOX-1,AmpC,NS penicillins
+blaFOX-1,AmpC,ES penicillins
+blaFOX-1,AmpC,1G cephalosporins
+blaFOX-1,AmpC,2G cephalosporins
+blaFOX-1,AmpC,3G cephalosporins
+blaFOX-1,AmpC,4G cephalosporins
+blaFOX-1,AmpC,Monobactams
+blaACC-4,AmpC,NS penicillins
+blaACC-4,AmpC,ES penicillins
+blaACC-4,AmpC,1G cephalosporins
+blaACC-4,AmpC,2G cephalosporins
+blaACC-4,AmpC,3G cephalosporins
+blaACC-4,AmpC,4G cephalosporins
+blaACC-4,AmpC,Monobactams
+blaKPC-18,Carbapenemases,NS penicillins
+blaKPC-18,Carbapenemases,ES penicillins
+blaKPC-18,Carbapenemases,1G cephalosporins
+blaKPC-18,Carbapenemases,3G cephalosporins
+blaKPC-18,Carbapenemases,4G cephalosporins
+blaKPC-18,Carbapenemases,Monobactams
+blaKPC-18,Carbapenemases,Carbapenems
+blaOXA-48,Carbapenemases,NS penicillins
+blaOXA-48,Carbapenemases,ES penicillins
+blaOXA-48,Carbapenemases,1G cephalosporins
+blaOXA-48,Carbapenemases,Monobactams
+blaNDM-1,Carbapenemases,NS penicillins
+blaNDM-1,Carbapenemases,ES penicillins
+blaNDM-1,Carbapenemases,1G cephalosporins
+blaNDM-1,Carbapenemases,2G cephalosporins
+blaNDM-1,Carbapenemases,3G cephalosporins
+blaNDM-1,Carbapenemases,4G cephalosporins
+blaNDM-1,Carbapenemases,Carbapenems
+blaIMP-4,Carbapenemases,1G cephalosporins
+blaIMP-4,Carbapenemases,2G cephalosporins
+blaIMP-4,Carbapenemases,3G cephalosporins
+blaIMP-4,Carbapenemases,4G cephalosporins
+blaIMP-4,Carbapenemases,Carbapenems
