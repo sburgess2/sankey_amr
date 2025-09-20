@@ -3,6 +3,7 @@ library(tidyverse)
 library(htmlwidgets)
 library(manipulateWidget)
 library(webshot2)
+library(ggsankey)
 
 links <- read_csv("data/betalactams.csv")
 
@@ -68,30 +69,53 @@ paletteer_d("nbapalettes::jazz_city")
 paletteer_d("ggsci::amber_material")
 
 #remotes::install_github("davidsjoberg/ggsankey")
-library(ggsankey)
 
 #Tutorial for the ggplot version of sankey https://r-graph-gallery.com/package/ggsankey.html
 
 df <- read_csv("data/betalactams_gsankey.csv")
-#Add a new column called x, where x == 1 if in the vector genes otherwise 2
-#gsankey <- links %>%
- #       mutate(x = ifelse(source %in% genes, 1, 2)) %>%
-  #      mutate(next_x = ifelse(target %in% mechanisms, 2, 3))
 
 
 df_long <- df %>%
         make_long(gene, mechanism, subclass)
 
+#Chatgpt used for this code
+mechanism_lookup <- df %>%
+        # Get gene-mechanism pairs
+        select(gene, mechanism) %>%
+        rename(node = gene) %>%
+        # Add mechanism-mechanism pairs (mechanisms map to themselves)
+        bind_rows(df %>% distinct(mechanism) %>% rename(node = mechanism) %>% mutate(mechanism = node)) %>%
+        distinct()
+
+# Add mechanism info to your long data
+df_long_colored <- df_long %>%
+        left_join(mechanism_lookup, by = "node")
+
+my_colour <- c(
+        "Reduced permeability" = "#A6E1F4FF",      
+        "Efflux pump" = "#0F7BA2FF",         
+        "Penicillinases" = "#FFECB3FF",
+        "Oxcillinases" = "#FFD54FFF", 
+        "IRT" = "#FFC107FF", 
+        "ESBL" = "#FFA000FF",
+        "AmpC" = "#FF6F00FF", 
+        "Carbapenemases" = "#DA291CFF",
+        "Other" = "#B3B7B8FF" )
 #Space alters space between rows/nodes in the y-direction
-ggplot(df_long, 
+ggplot(df_long_colored, 
        aes(x = x, 
            next_x = next_x, 
            node = node, 
            next_node = next_node,
-           fill = factor(node))) +
-        geom_sankey(show.legend = FALSE, space = 3) +
-        geom_sankey_label(data = df_long, aes(label = node)) +
-        theme_void()
+           fill = mechanism)) +
+        geom_sankey(show.legend = FALSE, space = 3, flow.alpha = 0.5, node.color = "black") +
+        geom_sankey_text(aes(label = node), fill = "grey") +
+        theme_void() +
+        scale_fill_manual(values = my_colour)
+
+
+
+
 
 cg <- read_csv("data/class_group.csv")
 
