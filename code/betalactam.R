@@ -4,6 +4,8 @@ library(htmlwidgets)
 library(manipulateWidget)
 library(webshot2)
 library(ggsankey)
+library(showtext)
+library(sysfonts)
 
 links <- read_csv("data/betalactams.csv")
 
@@ -102,20 +104,48 @@ my_colour <- c(
         "Carbapenemases" = "#DA291CFF",
         "Other" = "#B3B7B8FF" )
 #Space alters space between rows/nodes in the y-direction
-ggplot(df_long_colored, 
-       aes(x = x, 
-           next_x = next_x, 
-           node = node, 
-           next_node = next_node,
-           fill = mechanism)) +
-        geom_sankey(show.legend = FALSE, space = 3, flow.alpha = 0.5, node.color = "black") +
-        geom_sankey_text(aes(label = node), fill = "grey") +
+
+ggplot(df_long_colored, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = mechanism)) +
+        geom_sankey(show.legend = FALSE, flow.alpha = 0.7) +
+        geom_text(data = df_long_colored %>% filter(x == "gene"), stat = "sankey", aes(label = node), hjust = 0, nudge_x = -0.1) +
+        geom_sankey_text(data = df_long_colored %>% filter(x == "mechanism"), aes(label = node), hjust = 0.5) +
+        geom_sankey_text(data = df_long_colored %>% filter(x == "subclass"), aes(label = node), hjust = 1) +
         theme_void() +
         scale_fill_manual(values = my_colour)
 
+font_add_google(
+        name = "Lato", family = "lato")
 
+#enables showtext package to automatically render text
+showtext_auto
+showtext_opts(dpi = 300)
 
+font <- "lato"
 
+#Adapted from https://stackoverflow.com/questions/78240951/adjust-labels-on-individual-nodes-in-sankey-diagram-using-ggsankey
+ggplot(df_long_colored, aes(
+        x = x, next_x = next_x,
+        node = node, next_node = next_node,
+        fill = mechanism, label = node)) +
+        geom_sankey(flow.alpha = 0.7,
+                show.legend = FALSE) +
+        geom_sankey_text(
+                aes(x = stage(x,after_stat = x + 0.1 *
+                                          case_when(
+                                                  x == 1 ~ -1,    # Move gene labels left
+                                                  x == 3 ~ 1,     # Move subclass labels right
+                                                  .default = 0    # Keep mechanism labels centered
+                                          )),
+                        hjust = case_when(x == "gene" ~ 1,        
+                                x == "subclass" ~ 0, .default = 0.5),
+                    ),
+                size = 3,
+                color = "black", family = "lato", 
+                fontface = case_when(
+                        x == 1 ~ "italic",    # First column italic
+                        .default = "plain" )) +
+        theme_void() +
+        scale_fill_manual(values = my_colour)
 
 cg <- read_csv("data/class_group.csv")
 
@@ -136,3 +166,22 @@ ggplot(data = cg_long, aes(x = Category, y = Enzyme, fill = Value)) +
                 legend.position = "right"
         ) +
         labs(title = "Annotations")
+
+##Sankey for smaller data set
+
+test_genes <- c("ampC*", "ompF*", "acrAB-tolC*")
+
+df_test <- df %>%
+        filter(gene %in% test_genes) %>%
+        make_long(gene, mechanism, subclass)
+
+df_test_colored <- df_test %>%
+        left_join(mechanism_lookup, by = "node")
+
+ggplot(df_test_colored, aes(x = x, next_x = next_x, node = node, next_node = next_node)) +
+        geom_sankey(aes(fill = factor(node)), show.legend = FALSE) +
+        geom_sankey_text(aes(label = node), size = 3) +
+        theme_void()
+
+
+
