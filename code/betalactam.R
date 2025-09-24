@@ -76,7 +76,6 @@ paletteer_d("ggsci::amber_material")
 
 df <- read_csv("data/betalactams_gsankey.csv")
 
-
 df_long <- df %>%
         make_long(gene, mechanism, subclass)
 
@@ -107,7 +106,7 @@ my_colour <- c(
 
 ggplot(df_long_colored, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = mechanism)) +
         geom_sankey(show.legend = FALSE, flow.alpha = 0.7) +
-        geom_text(data = df_long_colored %>% filter(x == "gene"), stat = "sankey", aes(label = node), hjust = 0, nudge_x = -0.1) +
+        #geom_text(data = df_long_colored %>% filter(x == "gene"), aes(label = node), hjust = 0, nudge_x = -0.1) +
         geom_sankey_text(data = df_long_colored %>% filter(x == "mechanism"), aes(label = node), hjust = 0.5) +
         geom_sankey_text(data = df_long_colored %>% filter(x == "subclass"), aes(label = node), hjust = 1) +
         theme_void() +
@@ -122,28 +121,33 @@ showtext_opts(dpi = 300)
 
 font <- "lato"
 
+
 #Adapted from https://stackoverflow.com/questions/78240951/adjust-labels-on-individual-nodes-in-sankey-diagram-using-ggsankey
-ggplot(df_long_colored, aes(
+
+
+df_long_coloured <- df_long_coloured %>%
+        mutate(label_expr = case_when(
+                x == "gene" ~ paste0("italic('", node, "')"),          
+                x == "mechanism" ~ paste0("bold('", node, "')"),       
+                x == "subclass" ~ paste0("plain('", node, "')")        
+        ))
+
+ggplot(df_long_coloured, aes(
         x = x, next_x = next_x,
         node = node, next_node = next_node,
         fill = mechanism, label = node)) +
-        geom_sankey(flow.alpha = 0.7,
-                show.legend = FALSE) +
+        geom_sankey(flow.alpha = 0.7, show.legend = FALSE) +
         geom_sankey_text(
-                aes(x = stage(x,after_stat = x + 0.1 *
-                                          case_when(
-                                                  x == 1 ~ -1,    # Move gene labels left
-                                                  x == 3 ~ 1,     # Move subclass labels right
-                                                  .default = 0    # Keep mechanism labels centered
-                                          )),
-                        hjust = case_when(x == "gene" ~ 1,        
-                                x == "subclass" ~ 0, .default = 0.5),
-                    ),
-                size = 3,
-                color = "black", family = "lato", 
-                fontface = case_when(
-                        x == 1 ~ "italic",    # First column italic
-                        .default = "plain" )) +
+                aes(label = label_expr,
+                    x = stage(x, after_stat = x + 0.1 *
+                                      case_when(
+                                              x == 1 ~ -1,
+                                              x == 3 ~ 1,
+                                              .default = 0)),
+                    hjust = case_when(x == "gene" ~ 1,
+                                      x == "subclass" ~ 0,
+                                      .default = 0.5)),
+                parse = TRUE) +
         theme_void() +
         scale_fill_manual(values = my_colour)
 
