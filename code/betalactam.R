@@ -126,7 +126,7 @@ font <- "lato"
 
 
 df_long_coloured <- df_long_coloured %>%
-        mutate(label_expr = case_when(
+        mutate(label_pms = case_when(
                 x == "gene" ~ paste0("italic('", node, "')"),          
                 x == "mechanism" ~ paste0("bold('", node, "')"),       
                 x == "subclass" ~ paste0("plain('", node, "')")        
@@ -138,7 +138,7 @@ ggplot(df_long_coloured, aes(
         fill = mechanism, label = node)) +
         geom_sankey(flow.alpha = 0.7, show.legend = FALSE) +
         geom_sankey_text(
-                aes(label = label_expr,
+                aes(label = label_pms,
                     x = stage(x, after_stat = x + 0.1 *
                                       case_when(
                                               x == 1 ~ -1,
@@ -157,9 +157,12 @@ cg_long <- cg %>%
         pivot_longer(cols = c("Amber class", "Functional group"),
                      names_to = "Category", values_to = "Value")
 
+#Change tiles to a square shape
 ggplot(data = cg_long, aes(x = Category, y = Enzyme, fill = Value)) +
         geom_tile(color = "white", size = 0.8) +
-        scale_fill_viridis_d(name = "Class/Group") +
+        coord_equal() +
+        #scale_fill_viridis_d(name = "Class/Group") +
+        scale_fill_paletteer_d("ggthemes::Classic_Gray_5") +
         scale_x_discrete(position = "top") +
         theme_minimal() +
         theme(
