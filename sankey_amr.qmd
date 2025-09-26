@@ -428,5 +428,8 @@ ggplot(df_long_coloured3, aes(
     parse = TRUE) +
   theme_void() +
   scale_fill_manual(values = my_colour)
+
+
 ```
 
+See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes. 
