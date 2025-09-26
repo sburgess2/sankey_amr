@@ -543,3 +543,26 @@ ggplot(df_long_coloured3, aes(
   scale_fill_manual(values = my_colour)
 
 ```
+
+Next I have made a heat map to identify the amber class and functional group of each enzyme. This will (hopefully) be attached to the Sankey diagram. 
+
+```{r}
+cg <- read_csv("data/class_group.csv")
+
+cg_long <- cg %>%
+        pivot_longer(cols = c("Amber class", "Functional group"),
+                     names_to = "Category", values_to = "Value")
+
+ggplot(data = cg_long, aes(x = Category, y = Enzyme, fill = Value)) +
+        geom_tile(color = "white", size = 0.8) +
+        coord_equal() +
+        scale_fill_paletteer_d("ggthemes::Classic_Gray_5") +
+        scale_x_discrete(position = "top") +
+        theme_minimal() +
+        theme(
+                axis.title = element_blank(),
+                axis.text.x = element_text(hjust = 0),
+                axis.text.y = element_text(size = 8),
+                panel.grid = element_blank()
+        ) 
+```
