@@ -369,13 +369,6 @@ ggplot(df_long_coloured, aes(x = x, next_x = next_x, node = node, next_node = ne
 Next I left justified the first column labels and right justified the second column labels. This code was adapted from https://stackoverflow.com/questions/78240951/adjust-labels-on-individual-nodes-in-sankey-diagram-using-ggsankey.Here the function stage() is used to control the stage at which the aesthetics should be mapped/evaluated. 
 
 ```{r}
-
-df_long_coloured <- df_long_coloured %>%
-  mutate(label_expr = case_when(
-    x == "gene" ~ paste0("italic('", node, "')"),  # italics for gene names
-    TRUE ~ paste0("'", node, "'")                 # keep everything else normal
-  ))
-
 ggplot(df_long_coloured, aes(
         x = x, next_x = next_x,
         node = node, next_node = next_node,
@@ -402,19 +395,28 @@ In the ggplot I then added the arguments label = label_pms and parse = TRUE, to 
 
 ```{r}
 df_long_coloured2 <- df_long_coloured %>%
-  mutate(labels = case_when(
+  mutate(label_pms = case_when(
     x == "gene" ~ paste0("italic('", node, "')"),          
     x == "mechanism" ~ paste0("bold('", node, "')"),       
     x == "subclass" ~ paste0("plain('", node, "')")        
   ))
 
-ggplot(df_long_coloured, aes(
+#Change the bla gene labels to subscript after bla
+
+df_long_coloured3 <- df_long_coloured2 %>%
+  mutate(
+    label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
+                               "italic('\\1')[\\2]"))
+
+#Change the order of the plot 
+
+ggplot(df_long_coloured3, aes(
     x = x, next_x = next_x,
     node = node, next_node = next_node,
-    fill = mechanism, label = node)) +
+    fill = mechanism, label_pms = node)) +
   geom_sankey(flow.alpha = 0.7, show.legend = FALSE) +
   geom_sankey_text(
-    aes(label = labels,
+    aes(label = label_pms,
         x = stage(x, after_stat = x + 0.1 *
           case_when(
             x == 1 ~ -1,
