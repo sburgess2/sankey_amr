@@ -376,14 +376,15 @@ ggplot(df_long_coloured, aes(
         geom_sankey(flow.alpha = 0.7,
                 show.legend = FALSE) +
         geom_sankey_text(
-                aes(x = stage(x,after_stat = x + 0.1 *
+                aes(x = stage(x, after_stat = x + 0.1 *
                                           case_when(
                                                   x == 1 ~ -1,    
                                                   x == 3 ~ 1,     
                                                   .default = 0
-                                          )))) +
-                        hjust = case_when(x == "gene" ~ 1,        
-                                x == "subclass" ~ 0, .default = 0.5)+
+                                          )),
+                    hjust = case_when(x == "gene" ~ 1,        
+                            x == "subclass" ~ 0, 
+                            .default = 0.5))) +
         theme_void() +
         scale_fill_manual(values = my_colour)
         
@@ -408,7 +409,6 @@ df_long_coloured3 <- df_long_coloured2 %>%
     label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
                                "italic('\\1')[\\2]"))
 
-#Change the order of the plot 
 
 ggplot(df_long_coloured3, aes(
     x = x, next_x = next_x,
@@ -433,3 +433,50 @@ ggplot(df_long_coloured3, aes(
 ```
 
 See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes. 
+
+```{r order}
+df_long_coloured2 <- df_long_coloured
+
+df_long_coloured2$node <- factor(df_long_coloured3$node, levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
+
+df_long_coloured2$next_node <- factor(df_long_coloured3$next_node, 
+                                     levels = rev(c("Reduced permeability", "Efflux pump", "NS penicillins", "ES penicillins", "1G cephalosporins", "2G cephalosporins", "3G cephalosporins", "4G cephalosporins", "Monobactams", "Carbapenems",   "Penicillinases", "Oxcillinases", "IRT", "ESBL", "AmpC", "Carbapenemases")))
+
+df_long_coloured3$label_pms <- factor(df_long_coloured3$label_pms, 
+                                      levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
+
+ggplot(df_long_coloured2, aes(
+        x = x, next_x = next_x,
+        node = node, next_node = next_node,
+        fill = mechanism, label = node)) +
+        geom_sankey(flow.alpha = 0.7,
+                show.legend = FALSE) +
+        geom_sankey_text(
+                aes(x = stage(x, after_stat = x + 0.1 *
+                                          case_when(
+                                                  x == 1 ~ -1,    
+                                                  x == 3 ~ 1,     
+                                                  .default = 0
+                                          )),
+                    hjust = case_when(x == "gene" ~ 1,        
+                            x == "subclass" ~ 0, 
+                            .default = 0.5))) +
+        theme_void() +
+        scale_fill_manual(values = my_colour)
+
+
+df_long_coloured2 <- df_long_coloured %>%
+  mutate(label_pms = case_when(
+    x == "gene" ~ paste0("italic('", node, "')"),          
+    x == "mechanism" ~ paste0("bold('", node, "')"),       
+    x == "subclass" ~ paste0("plain('", node, "')")        
+  ))
+
+#Change the bla gene labels to subscript after bla
+
+df_long_coloured3 <- df_long_coloured2 %>%
+  mutate(
+    label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
+                               "italic('\\1')[\\2]"))
+
+```
