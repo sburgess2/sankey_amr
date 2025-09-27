@@ -1,0 +1,20 @@
+Gene,Enzyme,Amber class,Functional group
+blaTEM-1,TEM-1,A,2a
+blaSHV-1,SHV-1,A,2a
+blaOXA-1,OXA-1,D,2d
+blaTEM-30,TEM-30,A,2br
+blaTEM-10,TEM-10,A,2be
+blaSHV-12,SHV-12,A,2be
+blaCTX-M-15,CTX-M-15,A,2be
+blaGES-3,GES-3,A,2be
+blaROB-1,ROB-1,A,2be
+blaTLA-1,TLA-1,A,2be
+ampC*,AmpC,C,1
+blaCMY-2,CMY-2,C,1
+blaDHA-1,DHA-1,C,1
+blaFOX-1,FOX-1,C,1
+blaACC-4,ACC-4,C,1
+blaKPC-18,KPC-18,A,2f
+blaOXA-48,OXA-48,D,2df
+blaNDM-1,NDM-1,B1,3a
+blaIMP-4,IMP-4,A,2f
