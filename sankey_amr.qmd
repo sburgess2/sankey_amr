@@ -23,6 +23,7 @@ library(manipulateWidget)
 library(webshot2)
 library(paletteer)
 library(ggsankey)
+library(patchwork)
 ```
 
 ### Read in and prepare data
@@ -523,7 +524,7 @@ df_long_coloured3$label_pms <- factor(
   ))
 )
 
-ggplot(df_long_coloured3, aes(
+ps <- ggplot(df_long_coloured3, aes(
     x = x, next_x = next_x,
     node = node, next_node = next_node,
     fill = mechanism, label_pms = node)) +
@@ -553,16 +554,46 @@ cg_long <- cg %>%
         pivot_longer(cols = c("Amber class", "Functional group"),
                      names_to = "Category", values_to = "Value")
 
-ggplot(data = cg_long, aes(x = Category, y = Enzyme, fill = Value)) +
-        geom_tile(color = "white", size = 0.8) +
+cg_long2 <- cg_long
+
+cg_long2$Enzyme <- factor(
+  cg_long2$Enzyme,
+  levels = rev(c("TEM-1", "SHV-1", "OXA-1", "TEM-30", "TEM-10", "SHV-12", "CTX-M-15", "GES-3", "ROB-1", "TLA-1", "AmpC", "CMY-2", "DHA-1", "FOX-1", "ACC-4", "KPC-18", "OXA-48", "NDM-1", "IMP-4")))
+
+ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
+        geom_tile(color = "white", show.legend = FALSE) +
+        geom_text(aes(label = Value), color = "white", size = 4) +      
         coord_equal() +
-        scale_fill_paletteer_d("ggthemes::Classic_Gray_5") +
-        scale_x_discrete(position = "top") +
+        scale_fill_paletteer_d("impressionist.colors::la_recolte_des_foins_eragny") +
+        scale_x_discrete(position = "top", labels = label_wrap_gen(10)) +
         theme_minimal() +
-        theme(
-                axis.title = element_blank(),
-                axis.text.x = element_text(hjust = 0),
+        theme(axis.title = element_blank(),
                 axis.text.y = element_text(size = 8),
-                panel.grid = element_blank()
-        ) 
+
+                              panel.grid = element_blank()) 
+
+ph
+```
+
+The column widths were too narrow to fit the values and the axis title. So I removed coord_equal(), which makes the the length and the width the same for each tile. 
+
+```{r}
+ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
+        geom_tile(color = "white", show.legend = FALSE) +
+        geom_text(aes(label = Value), color = "white", size = 4) +      
+        scale_fill_paletteer_d("impressionist.colors::la_recolte_des_foins_eragny") +
+        scale_x_discrete(position = "top", labels = label_wrap_gen(10)) +
+        coord_fixed(ratio = 0.3) +
+        theme_minimal() +
+        theme(axis.title = element_blank(),
+                axis.text.y = element_text(size = 8),
+              panel.grid = element_blank()) 
+
+ph
+```
+
+Finally I joined the two plots together using the patchwork library
+
+```{r patchwork}
+ph + ps
 ```
