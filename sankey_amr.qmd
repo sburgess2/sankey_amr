@@ -22,13 +22,6 @@ library(htmlwidgets)
 library(manipulateWidget)
 library(webshot2)
 library(paletteer)
-library(ggsankey)
-library(patchwork)
-library(glue)
-library(showtext)
-library(sysfonts)
-library(ggtext)
-
 ```
 
 ### Read in and prepare data
@@ -229,23 +222,23 @@ Lastly here are some references I used for generating the resistance gene list:
 
 [@mounsey2024]
 
-## Sankey diagram to visualise *E. coli* genes which confer resistance  to the beta-lactams.
+## Sankey diagram to visualise *E. coli* genes which confer resistance to the beta-lactams.
 
 In this example I used the package ggsankey to generate a Sankey diagram. Visualising these resistance genes was not as straight forward as the other resistance genes visualised in the network above. There are multiple enzyme types, which all have a large number of variants. Certain variants have a wider range of resistance compared with their parent types, which adds in more complexity. For this reason I started with the genes on the left hand side. I grouped them into narrow spectrum ...
 
 ### Packages
 
-If you haven't done so already install the packages ggsankey, showtext and sysfonts, then load the libraries
+If you haven't done so already install the packages ggsankey, showtext and sysfonts, glue, patchwok and ggtext then load the libraries
 
 ```{r libraries2, message = FALSE, warning = FALSE, output = FALSE}
 #remotes::install_github("davidsjoberg/ggsankey")
-#install.packages("showtext")
-#install.packages("sysfonts")
 
 library(ggsankey)
-library(tidyverse)
+library(patchwork)
+library(glue)
 library(showtext)
 library(sysfonts)
+library(ggtext)
 ```
 
 ### Read in and prepare data
@@ -256,10 +249,10 @@ Read in the data.
 df <- read_csv("data/betalactams_gsankey.csv")
 ```
 
-My csv file contains three columns: "gene", "mechanism", "subclass". This data is set up differently to the first Sankey diagram in that each column will be a column in the Sankey diagram. "gene" is the name of each resistance gene. The second column is the mechanism. Instead of having "enzymatic inactivation" I divided the beta-lactamases into "Penicillinases",   "Oxcillinases", "IRT" (inhibitor resistant TEM), "ESBL", "AmpC", and "Carbapenemases". In addition I included "reduced permeability" and "efflux pump". The third column was the antibiotic subclass. Given most genes confer resistance to multiple sub classes there are multiple rows for each gene. 
+My csv file contains three columns: "gene", "mechanism", "subclass". This data is set up differently to the first Sankey diagram in that each column will be a column in the Sankey diagram. The first column "gene" is the name of each resistance gene. The second column is the mechanism or type of enzyme. So instead of having "enzymatic inactivation" I divided the beta-lactamases into "Penicillinases", "Oxcillinases", "IRT" (inhibitor resistant TEM), "ESBL", "AmpC", and "Carbapenemases". In addition I included the mechanisms "reduced permeability" and "efflux pump". The third column is the antibiotic subclass. Given most genes confer resistance to multiple sub classes there are multiple rows for each gene.
 
 ```{r}
-#Structure of my dataset
+#Structure of my dataframe
 str(df)
 
 #First six lines of my data frame
@@ -268,9 +261,10 @@ head(df)
 #Last six lines of my data frame
 tail(df)
 
-#The unique mechanisms
+#The unique mechanisms / enzyme types
 unique(df$mechanism)
 
+#The unique subclasses of antibiotics
 unique(df$subclass)
 ```
 
@@ -300,7 +294,8 @@ ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node,
         geom_sankey() +
         scale_fill_discrete(drop = FALSE)
 ```
-There's a lot to tidy up. First I would like to get rid of the grey background, the grid, and x and  y axis. Using theme_void() is the easiest way to do this. I would also like to remove the legend using show.legend = FALSE and add the labels onto the network. 
+
+There's a lot to tidy up. First I would like to get rid of the grey background, the grid, and x and y axis. Using theme_void() is the easiest way to do this. I would also like to remove the legend using show.legend = FALSE and add the labels onto the network.
 
 ```{r ggsankey3}
 ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node,
@@ -315,7 +310,6 @@ ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node,
 Next I changed the colours. First I wanted each gene to be coloured according to its mechanism and to use a more appealing colour palette than the default colours. An extra column was added to the long dataframe to group the genes and mechanism rows by mechanism.
 
 ```{r}
-#Chatgpt used for this code
 mechanism_lookup <- df %>%
         # Get gene-mechanism pairs
         select(gene, mechanism) %>%
@@ -329,15 +323,15 @@ df_long_coloured <- df_long %>%
         left_join(mechanism_lookup, by = "node")
 ```
 
-I selected my colours using https://r-graph-gallery.com/color-palette-finder
-Two shades of blue from the seeblau palette were used for the  and shades of yellow, orange, and red from the amber_material palette were used for the beta-lactamase mechanisms.
+I selected my colours using https://r-graph-gallery.com/color-palette-finder Two shades of blue from the seeblau palette were used for the "Reduced permeability" "Efflux pump". Shades of yellow, orange, and red from the amber_material palette were used for the beta-lactamase enzyme types.
 
 ```{r}
+#The two palettes that I selected my colours from
 paletteer_d("unikn::pal_seeblau")
 paletteer_d("ggsci::amber_material")
 ```
 
-I defined my colour palette. All the antibiotic subclasses were define as 'other'.
+I defined my colour palette. All the antibiotic subclasses were defined as 'other'.
 
 ```{r}
 my_colour <- c(
@@ -372,7 +366,7 @@ ggplot(df_long_coloured, aes(x = x, next_x = next_x, node = node, next_node = ne
         theme_void()
 ```
 
-Next I left justified the first column labels and right justified the second column labels. This code was adapted from https://stackoverflow.com/questions/78240951/adjust-labels-on-individual-nodes-in-sankey-diagram-using-ggsankey.Here the function stage() is used to control the stage at which the aesthetics should be mapped/evaluated. 
+Next I left justified the first column labels and right justified the second column labels. This code was adapted from https://stackoverflow.com/questions/78240951/adjust-labels-on-individual-nodes-in-sankey-diagram-using-ggsankey. Here the function stage() was used to control the stage at which the aesthetics should be mapped.
 
 ```{r}
 ggplot(df_long_coloured, aes(
@@ -396,9 +390,9 @@ ggplot(df_long_coloured, aes(
         
 ```
 
-Next I italicised the gene names and changed the mechanisms to a bold style. If anyone knows of any other ways to do this please let me know. To do this I first added another column with the plotmath syntax called label_pms. The paste0 function is used to join strings together with no separator. Here I joined the string "italic('" followed by the gene name, followed by the string "')".
+Next I italicised the gene names and changed the mechanisms to a bold style. If anyone knows of any other ways to do this please let me know. To do this I first added another column with the plotmath syntax called label_pms. The paste0 function was used to join strings together with no separator. Here I joined the string `"italic('"` with the node value (so the gene name), and the string `"')"`.
 
-In the ggplot I then added the arguments label = label_pms and parse = TRUE, to parse it as plotmath syntax. For example to draw x in italic font is written as `italic(x)` To see more on plotmath syntax see this link https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath. 
+In the ggplot I then added the arguments label = label_pms and parse = TRUE, to parse it as plotmath syntax. For example to draw x in italic font is written as `italic(x)` To see more on plotmath syntax see this link https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath.
 
 ```{r}
 df_long_coloured2 <- df_long_coloured %>%
@@ -412,8 +406,7 @@ df_long_coloured2 <- df_long_coloured %>%
 
 df_long_coloured3 <- df_long_coloured2 %>%
   mutate(
-    label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
-                               "italic('\\1')[\\2]"))
+    label_pms = str_replace_all(label_pms, "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", "italic('\\1')[\\2]"))
 
 
 ggplot(df_long_coloured3, aes(
@@ -438,7 +431,7 @@ ggplot(df_long_coloured3, aes(
 
 ```
 
-See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes. 
+See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes.
 
 ```{r order}
 df_long_coloured2 <- df_long_coloured
@@ -548,9 +541,10 @@ ps <- ggplot(df_long_coloured3, aes(
   theme_void() +
   scale_fill_manual(values = my_colour)
 
+ps
 ```
 
-Next I have made a heat map to identify the amber class and functional group of each enzyme. This will (hopefully) be attached to the Sankey diagram. 
+Next I have made a heat map to identify the amber class and functional group of each enzyme. This will (hopefully) be attached to the Sankey diagram.
 
 ```{r}
 cg <- read_csv("data/class_group.csv")
@@ -580,7 +574,7 @@ ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
 
 ```
 
-The column widths were too narrow to fit the values and the axis title. So I removed coord_equal(), which makes the the length and the width the same for each tile. 
+The column widths were too narrow to fit the values and the axis title. So I removed coord_equal(), which makes the the length and the width the same for each tile.
 
 ```{r}
 ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
@@ -634,23 +628,29 @@ linkedin_username <- "sara-burgess"
 
 #img = image, src = source, span is a span tag for inline styling
 social_caption <- glue(
-  "<img src='logo/GreenhoodLogoMark.png' width='20' height='14.84'/> <span style='color: {brand_color}'>**Business**</span> | ",
+  "<img src='logo/GreenhoodLogoMark.png' width='20' height='14.84'/> <span style='color: {brand_color};'><strong> Sara Burgess</strong></span> |",
   "<span style='font-family:\"Font Awesome 7 Brands\";'>{github_icon};</span> ",
   "<span style='color: #000000'>{github_username}</span> | ",
   "<span style='font-family:\"Font Awesome 7 Brands\";'>{linkedin_icon};</span> ",
   "<span style='color: #000000'>{linkedin_username}</span>"
 )
+```
 
+This is what my caption looks like without the plot. As described in Nicole Rennie's blog the element_text_box_simple() function is added so it can enable Markdown and/or HTML code. The element_text_box() function is very similar but it does not have any default values.
 
+```{r}
 ggplot() +
   labs(caption = social_caption) +
   theme(plot.caption = element_textbox_simple())
+```
 
+Next I've added my caption to the plot. I have used plot_annotation() to add the caption because, I'm using patchwork to join the two plots together.
+
+```{r caption2}
 #Note this results in a caption twice under each plot
-p_final <- p_join &
-  labs(caption = social_caption) &
-  theme(plot.caption = element_textbox_simple(),
-        plot.margin = margin(5, 5, 20, 5))
+p_final <- p_join +
+  plot_annotation(caption = social_caption) &
+  theme(plot.caption = element_textbox_simple())
 
 ggsave("output/hm_ggsankey_final.png", plot = p_final, width = 12, height = 0.67 * 12, dpi = 300)
 ```
