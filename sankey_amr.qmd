@@ -558,12 +558,18 @@ ps
 ```
 
 ```{r caption1}
-caption1 <- "Beta-lactam resistance in <i>E. coli</i> predominantly occurs through the acquisition of genes encoding beta-lactamases (shades of yellow, orange, and red, according to enzyme group), but can also occur through mutations in genes encoding outer membrane proteins (light blue) or efflux pumps (dark blue); genes with mutations are marked with an asterisk. This Sankey diagram illustrates how beta-lactam resistance genes can be grouped by mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) and the subclasses of beta-lactams that they confer resistance to. The beta-lactamase enzymes have been grouped into penicillinases, oxacillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One representative gene variant is shown. However, resistance profiles can vary between different variants of the same enzyme."
+caption1 <- "Beta-lactam resistance in <i>E. coli</i> predominantly occurs through the acquisition of genes encoding beta-lactamases (shades of yellow, orange, and red, according to enzyme group), but can also occur through mutations in genes encoding outer membrane proteins (light blue) or efflux pumps (dark blue); genes with mutations are marked with an asterisk. This Sankey diagram illustrates how beta-lactam resistance genes can be grouped by mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) and the subclasses of beta-lactams to which they confer resistance. The beta-lactamase enzymes have been grouped into penicillinases, oxacillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One representative gene variant is shown. However, resistance profiles can vary between different variants of the same enzyme."
 
 
-ps +
-  labs(caption = caption1)
-  theme(plot.caption = element_textbox_simple())
+psc <- ps +
+  labs(caption = caption1) +
+  theme(plot.caption.position = "plot", 
+        plot.caption = element_textbox_simple(
+          hjust = 0.5, 
+          margin = margin(t = 30, r = 5, b = 5, l = 5))
+        )
+
+ggsave("output/ggsankey_final.png", plot = psc, width = 12, height = 0.67 * 12, dpi = 300)
 ```
 Next I have made a heat map to identify the amber class and functional group of each enzyme. This will (hopefully) be attached to the Sankey diagram.
 
@@ -612,13 +618,23 @@ ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
 ph
 ```
 
-```{caption2}
-caption2 <- "Beta-lactamases can be grouped according to their Amber class and Bush functional group. Amber classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)"
+```{r caption2}
+caption2 <- "Beta-lactamases can be grouped according to their Amber class and Bush functional group. Amber classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)."
+
+phc <- ph + labs(caption = caption2) +
+  theme(plot.caption.position = "plot", 
+        plot.caption = element_textbox_simple(
+          hjust = 0,
+          margin = margin(t = 40, r = 10, b = 5, l = 10)))
+        #plot.margin = margin(t = 5, r = 10, b = 40, l = 10))
+
+#ggsave("output/heatmap_final.png", plot = phc, width = 12, height = 0.67 * 12, dpi = 300)
 ```
+
 Finally I joined the two plots together using the patchwork library
 
 ```{r patchwork}
-p_join <- ph + ps
+p_join <- phc + psc
 ```
 
 Next I added the title and subtitle.For adding titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
@@ -662,7 +678,7 @@ This is what my caption looks like without the plot. As described in Nicole Renn
 
 ```{r}
 ggplot() +
-  labs(caption = social_caption) +
+  labs(caption = social_caption, title = title) +
   theme(plot.caption = element_textbox_simple())
 ```
 
@@ -671,7 +687,7 @@ Next I've added my caption to the plot. I have used plot_annotation() to add the
 ```{r caption2}
 #Note this results in a caption twice under each plot
 p_final <- p_join +
-  plot_annotation(caption = social_caption) &
+  plot_annotation(caption = social_caption, title = title) &
   theme(plot.caption = element_textbox_simple())
 
 ggsave("output/hm_ggsankey_final.png", plot = p_final, width = 12, height = 0.67 * 12, dpi = 300)
