@@ -557,6 +557,14 @@ ps <- ggplot(df_long_coloured3, aes(
 ps
 ```
 
+```{r caption1}
+caption1 <- "Beta-lactam resistance in <i>E. coli</i> predominantly occurs through the acquisition of genes encoding beta-lactamases (shades of yellow, orange, and red, according to enzyme group), but can also occur through mutations in genes encoding outer membrane proteins (light blue) or efflux pumps (dark blue); genes with mutations are marked with an asterisk. This Sankey diagram illustrates how beta-lactam resistance genes can be grouped by mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) and the subclasses of beta-lactams that they confer resistance to. The beta-lactamase enzymes have been grouped into penicillinases, oxacillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One representative gene variant is shown. However, resistance profiles can vary between different variants of the same enzyme."
+
+
+ps +
+  labs(caption = caption1)
+  theme(plot.caption = element_textbox_simple())
+```
 Next I have made a heat map to identify the amber class and functional group of each enzyme. This will (hopefully) be attached to the Sankey diagram.
 
 ```{r}
@@ -604,6 +612,9 @@ ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
 ph
 ```
 
+```{caption2}
+caption2 <- "Beta-lactamases can be grouped according to their Amber class and Bush functional group. Amber classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)"
+```
 Finally I joined the two plots together using the patchwork library
 
 ```{r patchwork}
@@ -613,9 +624,8 @@ p_join <- ph + ps
 Next I added the title and subtitle.For adding titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
 
 ```{r title}
-title <- "Mechanisms of beta-lactam resistance in Escherichia coli"
-caption1 <- "Beta-lactam resistance in E. coli predominantly occurs through the acquisition of genes that encode beta-lactamases (marked in shades of yellow, orange, and red, according to their enzyme group), but can also occur through mutations in genes (marked with an asterix) encoding outer membrane proteins (light blue) or efflux pumps (dark blue). This Sankey diagram illustrates how beta-lactam resistance genes can be grouped based on mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) along with the subgroups of beta-lactams that they confer resistance to. The beta-lactamase enzymes have been grouped into penicillinases, oxcillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One example of each gene variant is shown. However, sometimes there are differences in resistance range between different enzyme variants."
-caption2 <- "Beta-lactamases can be grouped according to their Amber class and Bush functional group. Amber classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)"
+title <- "Mechanisms of beta-lactam resistance in <i>Escherichia coli</i>"
+
 ```
 
 Finally I added my social media and business icons. This code was adapted from Rennie, Nicola. 2023. “Adding Social Media Icons to Charts with {Ggplot2}.” July 27, 2023. https://nrennie.rbind.io/blog/adding-social-media-icons-ggplot2/.
