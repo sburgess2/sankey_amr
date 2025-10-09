@@ -488,17 +488,6 @@ df_long_coloured3 <- df_long_coloured3 %>%
 Note that when you change the order of your nodes, you also need to change the order of your labels so that they match the same order as your nodes. Here I've reordered the new labels with plotmath syntax so that they match the same order as the nodes.
 
 ```{r}
-df_long_coloured3$next_node <- factor(
-  df_long_coloured3$next_node,
-  levels = c(
-    "NS penicillins",
-    "ES penicillins",
-    "Monobactams",
-    "1G cephalosporins",
-    "2G cephalosporins",
-    "3G cephalosporins",
-    "4G cephalosporins",
-    "Carbapenems"))
 
 df_long_coloured3$label_pms <- factor(
   df_long_coloured3$label_pms,
@@ -619,14 +608,13 @@ Finally I joined the two plots together using the patchwork library
 
 ```{r patchwork}
 p_join <- ph + ps
-
 ```
 
 Next I added the title and subtitle.For adding titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
 
 ```{r title}
 title <- "Mechanisms of beta-lactam resistance in Escherichia coli"
-caption1 <- "Beta-lactam resistance in E. coli predominantly occurs through the acquisition of genes that encode beta-lactamases (marked in yellow, orange, and red), but can also occur through mutations in genes (marked with an asterix) encoding outer membrane proteins (light blue) or efflux pumps (dark blue). The beta-lactamase genes have been grouped into ... and the links illustrate the subgroups of antibiotics that they confer resistance to"
+caption1 <- "Beta-lactam resistance in E. coli predominantly occurs through the acquisition of genes that encode beta-lactamases (marked in shades of yellow, orange, and red, according to their enzyme group), but can also occur through mutations in genes (marked with an asterix) encoding outer membrane proteins (light blue) or efflux pumps (dark blue). This Sankey diagram illustrates how beta-lactam resistance genes can be grouped based on mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) along with the subgroups of beta-lactams that they confer resistance to. The beta-lactamase enzymes have been grouped into penicillinases, oxcillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One example of each gene variant is shown. However, sometimes there are differences in resistance range between different enzyme variants."
 caption2 <- "Beta-lactamases can be grouped according to their Amber class and Bush functional group. Amber classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)"
 ```
 
