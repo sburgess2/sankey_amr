@@ -243,7 +243,7 @@ library(ggtext)
 
 ### Read in and prepare data
 
-Read in the data.
+Next I read in the data.This was a data set that I curated manually. The database http://www.bldb.eu/ was very useful in putting together this dataset as were the publications listed below in the bibliography.
 
 ```{r readcsv2}
 df <- read_csv("data/betalactams_gsankey.csv")
@@ -321,9 +321,11 @@ mechanism_lookup <- df %>%
 # Add mechanism info to your long data
 df_long_coloured <- df_long %>%
         left_join(mechanism_lookup, by = "node")
+
+head(df_long_coloured)
 ```
 
-I selected my colours using https://r-graph-gallery.com/color-palette-finder Two shades of blue from the seeblau palette were used for the "Reduced permeability" "Efflux pump". Shades of yellow, orange, and red from the amber_material palette were used for the beta-lactamase enzyme types.
+I selected my colours using https://r-graph-gallery.com/color-palette-finder. Shades of blue from the seeblau palette were used for the "Reduced permeability" and "Efflux pump" mechanisms. Shades of yellow, orange, and red from the amber_material palette were used for the beta-lactamase enzyme types.
 
 ```{r}
 #The two palettes that I selected my colours from
@@ -345,6 +347,8 @@ my_colour <- c(
         "Carbapenemases" = "#DA291CFF",
         "Other" = "#B3B7B8FF" )
 ```
+
+Here I've filled the links by the new mechanism variable.
 
 ```{r}
 ggplot(df_long_coloured, aes(x = x, next_x = next_x, node = node, next_node = next_node,
@@ -375,22 +379,19 @@ ggplot(df_long_coloured, aes(
         fill = mechanism, label = node)) +
         geom_sankey(flow.alpha = 0.7,
                 show.legend = FALSE) +
-        geom_sankey_text(
-                aes(x = stage(x, after_stat = x + 0.1 *
-                                          case_when(
+        geom_sankey_text(aes(
+          x = stage(x, after_stat = x + 0.1 * case_when(
                                                   x == 1 ~ -1,    
                                                   x == 3 ~ 1,     
-                                                  .default = 0
-                                          )),
+                                                  .default = 0)),
                     hjust = case_when(x == "gene" ~ 1,        
                             x == "subclass" ~ 0, 
                             .default = 0.5))) +
         theme_void() +
         scale_fill_manual(values = my_colour)
-        
 ```
 
-See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes.
+Next I reordered the nodes. See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes.
 
 ```{r order}
 df_long_coloured2 <- df_long_coloured
@@ -447,21 +448,17 @@ df_long_coloured2$next_node <- factor(
     "NS penicillins", "ES penicillins","Monobactams","1G cephalosporins","Carbapenems","2G cephalosporins","3G cephalosporins", "4G cephalosporins" ))
 )
 
-df_long_coloured2 <- df_long_coloured
-
 ggplot(df_long_coloured2, aes(
         x = x, next_x = next_x,
         node = node, next_node = next_node,
         fill = mechanism, label = node)) +
         geom_sankey(flow.alpha = 0.7,
                 show.legend = FALSE) +
-        geom_sankey_text(
-                aes(x = stage(x, after_stat = x + 0.1 *
-                                          case_when(
+        geom_sankey_text(aes(
+          x = stage(x, after_stat = x + 0.1 *case_when(
                                                   x == 1 ~ -1,    
                                                   x == 3 ~ 1,     
-                                                  .default = 0
-                                          )),
+                                                  .default = 0)),
                     hjust = case_when(x == "gene" ~ 1,        
                             x == "subclass" ~ 0, 
                             .default = 0.5))) +
@@ -469,11 +466,12 @@ ggplot(df_long_coloured2, aes(
         scale_fill_manual(values = my_colour)
 ```
 
-Next I italicised the gene names and changed the mechanisms to a bold style. If anyone knows of any other ways to do this please let me know. To do this I first added another column with the plotmath syntax called label_pms. The paste0 function was used to join strings together with no separator. Here I joined the string "italic('" with the node value (so the gene name), and the string "')".
+I italicised the gene names and changed the mechanisms to a bold style using plotmath syntax. If anyone knows of any other ways to do this please let me know. To do this I first added another column with the plotmath syntax called label_pms. The paste0 function was used to join strings together with no separator. Here I joined the string `"italic('"` with the node value (so the gene name), and the string `"')"`.
 
 In the ggplot I then added the arguments label = label_pms and parse = TRUE, to parse it as plotmath syntax. For example to draw x in italic font is written as italic(x) To see more on plotmath syntax see this link https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath.
 
 ```{r}
+#Add a new column called label_pms with the plotmath syntax for font styling
 df_long_coloured3 <- df_long_coloured2 %>%
   mutate(label_pms = case_when(
     x == "gene" ~ paste0("italic('", node, "')"),          
@@ -482,11 +480,14 @@ df_long_coloured3 <- df_long_coloured2 %>%
   ))
 
 #Change the bla gene labels to subscript after bla
-
 df_long_coloured3 <- df_long_coloured3 %>%
-  mutate(
-    label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
+  mutate(label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
                                "italic('\\1')[\\2]"))
+```
+
+Note that when you change the order of your nodes, you also need to change the order of your labels so that they match the same order as your nodes. Here I've reordered the new labels with plotmath syntax so that they match the same order as the nodes.
+
+```{r}
 df_long_coloured3$next_node <- factor(
   df_long_coloured3$next_node,
   levels = c(
@@ -498,51 +499,6 @@ df_long_coloured3$next_node <- factor(
     "3G cephalosporins",
     "4G cephalosporins",
     "Carbapenems"))
-
-df_long_coloured3$label_pms <- factor(
-  df_long_coloured3$label_pms,
-  levels = rev(c(
-    "italic('ompC*')",
-    "bold('Reduced permeability')",
-    "plain('NS penicillins')",
-    "plain('ES penicillins')",
-    "plain('1G cephalosporins')",
-    "plain('3G cephalosporins')",
-    "plain('Carbapenems')",
-    "italic('ompF*')",
-    "italic('acrAB-tolC*')",
-    "bold('Efflux pump')",
-    "plain('4G cephalosporins')",
-    "italic('bla')[TEM-1]",
-    "bold('Penicillinases')",
-    "italic('bla')[SHV-1]",
-    "italic('bla')[OXA-1]",
-    "bold('Oxcillinases')",
-    "italic('bla')[TEM-30]",
-    "bold('IRT')",
-    "plain('Monobactams')",
-    "italic('bla')[TEM-10]",
-    "bold('ESBL')",
-    "italic('bla')[SHV-12]",
-    "italic('bla')[CTX-M-15]",
-    "italic('bla')[GES-3]",
-    "italic('bla')[VEB-1]",
-    "italic('bla')[ROB-1]",
-    "italic('bla')[TLA-1]",
-    "italic('ampC*')",
-    "bold('AmpC')",
-    "plain('2G cephalosporins')",
-    "italic('bla')[CMY-2]",
-    "italic('bla')[DHA-1]",
-    "italic('bla')[FOX-1]",
-    "italic('bla')[ACC-4]",
-    "italic('bla')[KPC-18]",
-    "bold('Carbapenemases')",
-    "italic('bla')[OXA-48]",
-    "italic('bla')[NDM-1]",
-    "italic('bla')[IMP-4]"
-  ))
-)
 
 df_long_coloured3$label_pms <- factor(
   df_long_coloured3$label_pms,
