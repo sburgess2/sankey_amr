@@ -390,13 +390,9 @@ ggplot(df_long_coloured, aes(
         
 ```
 
-Next I italicised the gene names and changed the mechanisms to a bold style. If anyone knows of any other ways to do this please let me know. To do this I first added another column with the plotmath syntax called label_pms. The paste0 function was used to join strings together with no separator. Here I joined the string `"italic('"` with the node value (so the gene name), and the string `"')"`.
-
-In the ggplot I then added the arguments label = label_pms and parse = TRUE, to parse it as plotmath syntax. For example to draw x in italic font is written as `italic(x)` To see more on plotmath syntax see this link https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath.
-
 ```{r}
-df_long_coloured2 <- df_long_coloured %>%
-  mutate(label_pms = case_when(
+#df_long_coloured2 <- df_long_coloured %>%
+ # mutate(label_pms = case_when(
     x == "gene" ~ paste0("italic('", node, "')"),          
     x == "mechanism" ~ paste0("bold('", node, "')"),       
     x == "subclass" ~ paste0("plain('", node, "')")        
@@ -404,7 +400,7 @@ df_long_coloured2 <- df_long_coloured %>%
 
 #Change the bla gene labels to subscript after bla
 
-df_long_coloured3 <- df_long_coloured2 %>%
+#df_long_coloured3 <- df_long_coloured2 %>%
   mutate(
     label_pms = str_replace_all(label_pms, "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", "italic('\\1')[\\2]"))
 
@@ -436,12 +432,75 @@ See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on ho
 ```{r order}
 df_long_coloured2 <- df_long_coloured
 
-df_long_coloured2$node <- factor(df_long_coloured3$node, levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
+df_long_coloured2$node <- factor(
+  df_long_coloured$node, 
+  levels = rev(c(
+    "ompC*", 
+    "Reduced permeability", 
+    "ompF*", 
+    "acrAB-tolC*", 
+    "Efflux pump", 
+    "blaTEM-1", 
+    "Penicillinases", 
+    "blaSHV-1", 
+    "blaOXA-1", 
+    "Oxcillinases", 
+    "blaTEM-30", 
+    "IRT", 
+    "blaTEM-10", 
+    "ESBL", 
+    "blaSHV-12", 
+    "blaCTX-M-15", 
+    "blaGES-3", 
+    "blaVEB-1", 
+    "blaROB-1", 
+    "blaTLA-1", 
+    "ampC*", 
+    "AmpC", 
+    "blaCMY-2", 
+    "blaDHA-1", 
+    "blaFOX-1",  
+    "blaACC-4", 
+    "blaKPC-18", 
+    "Carbapenemases", 
+    "blaOXA-48", 
+    "blaNDM-1", 
+    "blaIMP-4",
+    # Antibiotic subclasses in REVERSE order (because of rev() above)
+    "NS penicillins", "ES penicillins", "Monobactams", "1G cephalosporins","2G cephalosporins","3G cephalosporins", "4G cephalosporins","Carbapenems"
+    
+    
+    
+    
+    
+    
+    
+  ))
+)
 
-df_long_coloured2$next_node <- factor(df_long_coloured3$next_node, 
-                                     levels = rev(c("Reduced permeability", "Efflux pump", "NS penicillins", "ES penicillins", "1G cephalosporins", "2G cephalosporins", "3G cephalosporins", "4G cephalosporins", "Monobactams", "Carbapenems",   "Penicillinases", "Oxcillinases", "IRT", "ESBL", "AmpC", "Carbapenemases")))
+df_long_coloured2$next_node <- factor(
+  df_long_coloured$next_node, 
+  levels = rev(c(
+    "Reduced permeability", 
+    "Efflux pump", 
+    "Penicillinases", 
+    "Oxcillinases", 
+    "IRT", 
+    "ESBL", 
+    "AmpC", 
+    "Carbapenemases",
+    # Same order for next_node
+    "NS penicillins", "ES penicillins","Monobactams","1G cephalosporins","Carbapenems","2G cephalosporins","3G cephalosporins", "4G cephalosporins" ))
+)
 
-df_long_coloured3$label_pms <- factor(df_long_coloured3$label_pms, 
+df_long_coloured2 <- df_long_coloured
+
+df_long_coloured2$node <- factor(df_long_coloured$node, levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
+
+df_long_coloured2$next_node <- factor(df_long_coloured$next_node, 
+                                     levels = rev(c("Reduced permeability", "Efflux pump", "NS penicillins", "ES penicillins", "Monobactams", "1G cephalosporins", "2G cephalosporins", "3G cephalosporins", "4G cephalosporins", "Carbapenems",   "Penicillinases", "Oxcillinases", "IRT", "ESBL", "AmpC", "Carbapenemases")))
+
+#df_long_coloured3$label_pms <- factor(df_long_coloured3$label_pms, 
                                       levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
 
 ggplot(df_long_coloured2, aes(
@@ -462,8 +521,13 @@ ggplot(df_long_coloured2, aes(
                             .default = 0.5))) +
         theme_void() +
         scale_fill_manual(values = my_colour)
+```
 
+Next I italicised the gene names and changed the mechanisms to a bold style. If anyone knows of any other ways to do this please let me know. To do this I first added another column with the plotmath syntax called label_pms. The paste0 function was used to join strings together with no separator. Here I joined the string "italic('" with the node value (so the gene name), and the string "')".
 
+In the ggplot I then added the arguments label = label_pms and parse = TRUE, to parse it as plotmath syntax. For example to draw x in italic font is written as italic(x) To see more on plotmath syntax see this link https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath.
+
+```{r}
 df_long_coloured3 <- df_long_coloured2 %>%
   mutate(label_pms = case_when(
     x == "gene" ~ paste0("italic('", node, "')"),          
@@ -477,6 +541,18 @@ df_long_coloured3 <- df_long_coloured3 %>%
   mutate(
     label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
                                "italic('\\1')[\\2]"))
+df_long_coloured3$next_node <- factor(
+  df_long_coloured3$next_node,
+  levels = c(
+    "NS penicillins",
+    "ES penicillins",
+    "Monobactams",
+    "1G cephalosporins",
+    "2G cephalosporins",
+    "3G cephalosporins",
+    "4G cephalosporins",
+    "Carbapenems"))
+
 df_long_coloured3$label_pms <- factor(
   df_long_coloured3$label_pms,
   levels = rev(c(
@@ -519,6 +595,52 @@ df_long_coloured3$label_pms <- factor(
     "italic('bla')[OXA-48]",
     "italic('bla')[NDM-1]",
     "italic('bla')[IMP-4]"
+  ))
+)
+
+df_long_coloured3$label_pms <- factor(
+  df_long_coloured3$label_pms,
+  levels = rev(c(
+    "italic('ompC*')",
+    "bold('Reduced permeability')",
+    "italic('ompF*')",
+    "italic('acrAB-tolC*')",
+    "bold('Efflux pump')",
+    "italic('bla')[TEM-1]",
+    "bold('Penicillinases')",
+    "italic('bla')[SHV-1]",
+    "italic('bla')[OXA-1]",
+    "bold('Oxcillinases')",
+    "italic('bla')[TEM-30]",
+    "bold('IRT')",
+    "italic('bla')[TEM-10]",
+    "bold('ESBL')",
+    "italic('bla')[SHV-12]",
+    "italic('bla')[CTX-M-15]",
+    "italic('bla')[GES-3]",
+    "italic('bla')[VEB-1]",
+    "italic('bla')[ROB-1]",
+    "italic('bla')[TLA-1]",
+    "italic('ampC*')",
+    "bold('AmpC')",
+    "italic('bla')[CMY-2]",
+    "italic('bla')[DHA-1]",
+    "italic('bla')[FOX-1]",
+    "italic('bla')[ACC-4]",
+    "italic('bla')[KPC-18]",
+    "bold('Carbapenemases')",
+    "italic('bla')[OXA-48]",
+    "italic('bla')[NDM-1]",
+    "italic('bla')[IMP-4]",
+    # Now the antibiotic subclasses in your desired order:
+    "plain('NS penicillins')",
+    "plain('ES penicillins')",
+    "plain('Monobactams')",
+    "plain('1G cephalosporins')",
+    "plain('2G cephalosporins')",
+    "plain('3G cephalosporins')",
+    "plain('4G cephalosporins')",
+    "plain('Carbapenems')"
   ))
 )
 
