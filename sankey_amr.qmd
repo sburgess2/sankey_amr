@@ -466,16 +466,7 @@ df_long_coloured2$node <- factor(
     "blaOXA-48", 
     "blaNDM-1", 
     "blaIMP-4",
-    # Antibiotic subclasses in REVERSE order (because of rev() above)
-    "NS penicillins", "ES penicillins", "Monobactams", "1G cephalosporins","2G cephalosporins","3G cephalosporins", "4G cephalosporins","Carbapenems"
-    
-    
-    
-    
-    
-    
-    
-  ))
+    "NS penicillins", "ES penicillins", "Monobactams", "1G cephalosporins","2G cephalosporins","3G cephalosporins", "4G cephalosporins","Carbapenems" ))
 )
 
 df_long_coloured2$next_node <- factor(
@@ -494,14 +485,6 @@ df_long_coloured2$next_node <- factor(
 )
 
 df_long_coloured2 <- df_long_coloured
-
-df_long_coloured2$node <- factor(df_long_coloured$node, levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
-
-df_long_coloured2$next_node <- factor(df_long_coloured$next_node, 
-                                     levels = rev(c("Reduced permeability", "Efflux pump", "NS penicillins", "ES penicillins", "Monobactams", "1G cephalosporins", "2G cephalosporins", "3G cephalosporins", "4G cephalosporins", "Carbapenems",   "Penicillinases", "Oxcillinases", "IRT", "ESBL", "AmpC", "Carbapenemases")))
-
-#df_long_coloured3$label_pms <- factor(df_long_coloured3$label_pms, 
-                                      levels = rev(c("ompC*", "Reduced permeability", "NS penicillins", "ES penicillins", "1G cephalosporins", "3G cephalosporins", "Carbapenems", "ompF*", "acrAB-tolC*", "Efflux pump", "4G cephalosporins", "blaTEM-1", "Penicillinases", "blaSHV-1", "blaOXA-1", "Oxcillinases", "blaTEM-30", "IRT", "Monobactams", "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", "ampC*", "AmpC", "2G cephalosporins", "blaCMY-2", "blaDHA-1", "blaFOX-1",  "blaACC-4", "blaKPC-18", "Carbapenemases", "blaOXA-48", "blaNDM-1", "blaIMP-4")))
 
 ggplot(df_long_coloured2, aes(
         x = x, next_x = next_x,
