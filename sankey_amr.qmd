@@ -577,7 +577,7 @@ Next I have made a heat map to identify the amber class and functional group of 
 cg <- read_csv("data/class_group.csv")
 
 cg_long <- cg %>%
-        pivot_longer(cols = c("Amber class", "Functional group"),
+        pivot_longer(cols = c("Ambler class", "Functional group"),
                      names_to = "Category", values_to = "Value")
 
 cg_long2 <- cg_long
@@ -619,7 +619,7 @@ ph
 ```
 
 ```{r caption2}
-caption2 <- "Beta-lactamases can be grouped according to their Amber class and Bush functional group. Amber classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)."
+caption2 <- "Beta-lactamases can be grouped according to their Ambler class and Bush functional group. Ambler classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)."
 
 phc <- ph + labs(caption = caption2) +
   theme(plot.caption.position = "plot", 
@@ -640,7 +640,7 @@ p_join <- phc + psc
 Next I added the title and subtitle.For adding titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
 
 ```{r title}
-title <- "Mechanisms of beta-lactam resistance in <i>Escherichia coli</i>"
+title <- "Beta-lactam resistance in <i>Escherichia coli</i>"
 
 ```
 
