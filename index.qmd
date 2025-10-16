@@ -1,0 +1,712 @@
+---
+bibliography: references2.bib
+csl: nature-communications.csl
+nocite: |
+   @*
+---
+
+## Sankey diagrams to visualise *E. coli* resistance genes
+
+There are several R packages that enable Sankey diagrams to be generated. In these two examples I used the networkD3 and ggsankey packages. In this example a Sankey diagram was used to visualise the different resistance genes and mechanisms that E. coli uses to become resistant to six classes of antibiotics. A separate Sankey diagram was used to illustrate beta-lactam resistance as there are so many different beta-lactam resistance genes
+
+## Generating a Sankey diagram using networkD3
+
+This Sankey diagram covers E. coli resistance to six classes of antibiotics (Aminoglycosides, Fluoroquinolones, Tetracyclines, Phenicols, Sulfonamides & Trimethoprim, "Nitrofurans).
+
+### Packages
+
+If you haven't done so already install the packages networkD3, tidyverse, htmlwidgets, manipulateWidget and webshot2.
+
+Load the libraries
+
+```{r libraries, message = FALSE, warning = FALSE, output = FALSE}
+library(networkD3)
+library(tidyverse)
+library(htmlwidgets)
+library(manipulateWidget)
+library(webshot2)
+library(paletteer)
+```
+
+### Read in and prepare data
+
+The following code was adapted from <https://r-graph-gallery.com/321-introduction-to-interactive-sankey-diagram-2.html> (and a little bit of help from ChatGPT when I had trouble setting up the groups). Two data frames are needed to generate a Sankey diagram. One for the links and the other for the nodes. In the R Graph Gallery example, the links data frame was generated using the `data.frame()` function. Initially I tried this, but then it became too messy when I was adding multiple antibiotic classes so I read in a csv file.
+
+```{r readcsv}
+links <- read_csv("data/resistance_mechanisms.csv")
+```
+
+My csv file contains three columns: source, target, value. Source is the origin of each data link. Given, my Sankey diagram has three columns, source is both the name of the of the antibiotic classes and the mechanisms. Target is the endpoint of each data link. This contains the mechanisms and resistance genes. Value is the thickness of each link.
+
+```{r}
+#First six lines of my data frame
+head(links)
+
+#Last six lines of my data frame
+tail(links)
+```
+
+The \` in some of my gene names is read in as ? so first I replaced the ? with ′
+
+```{r}
+links$target <- str_replace_all(links$target, "\\?", "′") 
+```
+
+Next I created a one column data frame for all the nodes. The column name is labelled name and the observations are all the unique names from source and target.
+
+```{r}
+nodes <- data.frame(
+  name = unique(c(as.character(links$source), as.character(links$target))))
+```
+
+A second column was added to the nodes data frame called group. This will be used to colour the Sankey diagram links by group.
+
+```{r}
+# Grouping
+nodes$group <- case_when(
+  nodes$name == "Aminoglycosides" ~ "Aminoglycosides",
+  nodes$name == "Fluoroquinolones" ~ "Fluoroquinolones",
+  nodes$name == "Tetracyclines" ~ "Tetracyclines",
+  nodes$name == "Phenicols" ~ "Phenicols",
+  nodes$name == "Sulfonamides & Trimethoprim" ~ "Sulfonamides",
+  nodes$name == "Nitrofurans" ~ "Nitrofurans",
+  nodes$name == "Macrolides" ~ "Macrolides",
+  nodes$name %in% c("aac(3′)", "aadA", "aadB", "aadD",
+                    "aph(3′)", "aphA15", "rrsH*", "rsmG*") ~ "Aminoglycosides",
+  nodes$name %in% c("gyrA*", "gyrB*", "parC*", "parE*", "qep", "qnr", "oqxAB") ~ "Fluoroquinolones",
+  nodes$name %in% c("tetX", "tetM", "tetW", "tetA", "tetB", "tetC", "tetD") ~ "Tetracyclines",
+  nodes$name %in% c("catB", "catII", "cmlA", "floR") ~ "Phenicols",
+  nodes$name %in% c("dfr", "folP*", "sul1", "sul2", "sul3", "sul4") ~ "Sulfonamides",
+  nodes$name %in% c("nfsA*", "nfsB*", "ahpF*", "ribB*", "ribE*") ~ "Nitrofurans",
+  nodes$name %in% c("ermA", "ermB", "ermC", "ereA", "mphA", "mphB", "mefA", "mefB", "msrA", "msrD") ~ "Macrolides",
+  TRUE ~ "Other"
+)
+```
+
+Two additional columns were added, which contain an index for both the source and the target. The match function is used to match the position of the values that are being matched. As I understand it networkD3 uses an index system starting from 0, whereas base R starts from 1, hence the -1 is needed to generate an index system suitable for the function `networkD3::sankeyNetwork()`.
+
+```{r}
+# ID mapping
+links$IDsource <- match(links$source, nodes$name) - 1
+links$IDtarget <- match(links$target, nodes$name) - 1
+
+links
+```
+
+Similar to the nodes data frame a group column was also added to the links data frame.
+
+```{r}
+#Generate vector containing the group names for all the antibiotic classes
+class <- c("Aminoglycosides", "Fluoroquinolones", "Tetracyclines", "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans", "Macrolides")
+#Generate vector containing the group names for all the mechanisms
+mechanisms <- c("Enzymatic inactivation", "Target alteration", "Target protection", "Efflux pump", "Target replacement", "Reduced prodrug activation")
+
+# Assign groups
+links$group <- case_when(
+  links$source %in% class ~ nodes$group[match(links$source, nodes$name)],
+  links$source %in% mechanisms ~ nodes$group[match(links$target, nodes$name)],
+  TRUE ~ "Other")
+```
+
+Lastly I generated my colour scale. Here (as I understand it) because networkD3 uses Javascript code the colour scale also has to be written in Javascript. '.domain' defines each group that I want to apply each colour to.
+
+```{r colour}
+my_color <- 'd3.scaleOrdinal()
+  .domain(["Aminoglycosides", "Fluoroquinolones", "Tetracyclines", 
+           "Phenicols", "Sulfonamides", "Nitrofurans", "Macrolides", "Other"])
+  .range(["#90CAF9", "#A5D6A7", "#D1C4E9", "#ffffb3", "#fb8072", "#fdb462", "#F8BBD0FF", "#E0E0E0"]);'
+```
+
+### Sankey diagram
+
+Now for the fun part generating the Sankey diagram.
+
+```{r sankey1, message = FALSE}
+# Sankey plot
+q <- sankeyNetwork(
+  Links = links, Nodes = nodes,
+  Source = "IDsource", Target = "IDtarget",
+  Value = "value", NodeID = "name",
+  NodeGroup = "group", LinkGroup = "group",
+  colourScale = my_color,
+  width = 900, height = 900,
+  nodeWidth = 60
+)
+q
+```
+
+There are a few things I don't like. The font size and type, as well as having the resistance genes on top of the links.
+
+Here I've adjusted these three things within the `sankeyNetwork()` function using the arguments fontSize, fontFamily, and sinksRight.
+
+```{r sankey2, message = FALSE}
+# Sankey plot
+p <- sankeyNetwork(
+  Links = links, Nodes = nodes,
+  Source = "IDsource", Target = "IDtarget",
+  Value = "value", NodeID = "name",
+  NodeGroup = "group", LinkGroup = "group",
+  colourScale = my_color,
+  fontSize = 12, fontFamily = "Verdana", nodeWidth = 60, sinksRight = FALSE, width = 900, height = 900
+)
+p
+```
+
+It's still not quite what I'd like. To my knowledge that is pretty much all that can be adjusted within the `SankeyNetwork()` function. However, because the Sankey Network is an htmlwidget (you can check this using the class function) you can use the htmlwidge package to append labels.
+
+```{r class}
+class(p)
+```
+
+### Using htmlwidgets to adjust the Sankey diagram
+
+The code below was adapted from the tutorial <https://www.geeksforgeeks.org/r-language/how-to-add-axis-labels-using-networkd3-in-r/> and the response on this stack overflow post <https://stackoverflow.com/questions/50132459/how-to-add-title-to-a-networkd3-visualisation-when-saving-as-a-web-page>
+
+Here I've added a title to my diagram.
+
+```{r prepend}
+#prepend title
+p1 <- htmlwidgets::prependContent(p, htmltools::tags$h1(htmltools::HTML("Resistance genes in <em>Escherichia coli</em>"),
+  style = "text-align:center; color:#1b2422; font-size:18px; font-family:Verdana;"))
+p1
+```
+
+Here I've added a footnote to my diagram.
+
+```{r append}
+#append footnote
+p2 <- htmlwidgets::appendContent(p1, htmltools::tags$p("* Genes with point mutations", style = "text-align:center; color:#666; font-size:12px; font-family:Verdana;"))
+p2
+```
+
+I also wanted to change the font style to bold for the antibiotic classes and italics for the resistance genes. I got a bit of help from ChatGPT for this piece of code.
+
+```{r}
+#The following function was generated using chapgpt
+p3 <- htmlwidgets::onRender(p2, '
+  function(el, x) {
+    const boldNames = [
+      "Aminoglycosides", "Fluoroquinolones", "Tetracyclines",
+      "Phenicols", "Sulfonamides & Trimethoprim", "Nitrofurans",
+      "Enzymatic inactivation", "Target alteration",
+      "Target protection", "Efflux pump", "Target replacement",
+      "Reduced prodrug activation", "Macrolides"
+    ];
+
+    const italicSubstrings = [
+      "aac", "aad", "aph", "rr", "rsm", "qep", "qnr", "tet", "cat",
+      "gyr", "par", "mdf", "fol", "dfr", "nfs", "cml", "flo", "oqx", "sul",
+      "erm", "ereA", "mph", "mef", "msr", "ahpF", "rib"
+    ];
+
+    d3.select(el)
+      .selectAll(".node text")
+      .style("font-weight", d => boldNames.includes(d.name) ? "bold" : "normal")
+      .style("font-style", d =>
+        italicSubstrings.some(sub => d.name.includes(sub)) ? "italic" : "normal"
+      );
+  }
+')
+
+p3
+```
+
+## Saving the Sankey diagram
+
+If you are trying this code or similar and want to save your plot as a png you will not be able to use `ggsave()` function because the Sankey Network is an htmlwidget. First save your plot as an html and then take a screenshot using webshot.
+
+```{r, eval = FALSE}
+htmlwidgets::saveWidget(p3, "output/sankey.html", selfcontained = TRUE)
+webshot("output/sankey.html", file = "output/sankey_arg.png", vwidth = 900, vheight = 900)
+```
+
+One thing I haven't been able to work out is how remove the white space on either side and align the footer to the gene name column, when I save the plot as a png. When I tried to use style = "text-align:right" the footnote disappeared off the page in the png. If anyone reading this has any tips please email me or DM on LinkedIn.
+
+Lastly here are some references I used for generating the resistance gene list:
+
+[@mounsey2024]
+
+## Generating a Sankey diagram using ggsankey to visualise *E. coli* genes which confer resistance to the beta-lactams.
+
+In this example I used the package ggsankey to generate a Sankey diagram. Visualising these resistance genes was not as straight forward as the other resistance genes visualised in the network above. There are multiple enzyme types, which all have a large number of variants. Certain variants have a wider range of resistance compared with their parent types, which adds in more complexity. For this reason I started with the genes on the left hand side.
+
+### Packages
+
+Install the packages ggsankey, showtext and sysfonts, glue, patchwok and ggtext then load the libraries
+
+```{r libraries2, message = FALSE, warning = FALSE, output = FALSE}
+#remotes::install_github("davidsjoberg/ggsankey")
+
+library(ggsankey)
+library(patchwork)
+library(glue)
+library(showtext)
+library(sysfonts)
+library(ggtext)
+```
+
+### Read in and prepare data
+
+Next I read in the data.I generated this dataset manually. The publications used for generated this dataset are listed in the bibliography.
+
+```{r readcsv2}
+df <- read_csv("data/betalactams_gsankey.csv")
+```
+
+My csv file contains three columns: "gene", "mechanism", "subclass". This data is set up differently to the first Sankey diagram in that each column will be a column in the Sankey diagram. The first column "gene" is the name of each resistance gene. The second column is the mechanism or type of enzyme. So instead of having "enzymatic inactivation" I divided the beta-lactamases into "Penicillinases", "Oxcillinases", "IRT" (inhibitor resistant TEM), "ESBL", "AmpC", and "Carbapenemases". In addition I included the mechanisms "reduced permeability" and "efflux pump". The third column is the antibiotic subclass. Given most genes confer resistance to multiple sub classes there are multiple rows for each gene.
+
+```{r}
+#Structure of my dataframe
+str(df)
+
+#First six lines of my data frame
+head(df)
+
+#Last six lines of my data frame
+tail(df)
+
+#The unique mechanisms / enzyme types
+unique(df$mechanism)
+
+#The unique subclasses of antibiotics
+unique(df$subclass)
+```
+
+Next, the data was converted to a long format using a function `make_long()` from the ggsankey package. This long format contains columns that define how the links flow through the diagram:
+
+-   `x`: the name of the current column (called a stage) on the x axis.
+
+-   `next_x`: the name of the next stage `x` links to (NA for the final stage which is why the subclass rows have NA values).
+
+-   `node`: the value at the starting node.
+
+-   `next_node`: the value at the connecting node.
+
+The following code was adapted from https://r-graph-gallery.com/package/ggsankey.html
+
+```{r df_long}
+df_long <- df %>%
+        make_long(gene, mechanism, subclass)
+
+head(df_long)
+```
+
+Here is a first look at how the data looks when it is plotted.
+
+```{r ggsankey1}
+ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node)) +
+        geom_sankey()
+```
+
+Here is the same plot with the links and nodes coloured by node.
+
+```{r ggsankey2}
+ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node,
+                    fill = factor(node))) +
+        geom_sankey() +
+        scale_fill_discrete(drop = FALSE)
+```
+
+There is a lot to tidy up. First I removed the grey background, the grid, and x and y axis labels. I find that using `theme_void()` is the easiest way to do this. I also removed the legend using `show.legend = FALSE`.
+
+```{r ggsankey3}
+ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node,
+                    fill = factor(node))) +
+        geom_sankey(show.legend = FALSE) +
+        scale_fill_discrete(drop = FALSE) +
+        theme_void()
+        
+```
+
+Next I addd node labels onto the Sankey diagram.
+
+```{r ggsankey4}
+ggplot(df_long, aes(x = x, next_x = next_x, node = node, next_node = next_node,
+                    fill = factor(node))) +
+        geom_sankey(show.legend = FALSE) +
+        geom_sankey_text(aes(label = node)) +
+        scale_fill_discrete(drop = FALSE) +
+        theme_void()
+        
+```
+
+I wanted to change the colours of the links so that each gene would be coloured according to its mechanism using a more visually appealing colour palette (IMO) compared with the default colours. First an extra column was added to the long dataframe to group the genes and mechanism rows by mechanism.
+
+```{r}
+mechanism_lookup <- df %>%
+        select(gene, mechanism) %>%
+        rename(node = gene) %>%
+        bind_rows(df %>% distinct(mechanism) %>% rename(node = mechanism) %>% mutate(mechanism = node)) %>%
+        distinct()
+
+# Add mechanism info to the long data
+df_long_coloured <- df_long %>%
+        left_join(mechanism_lookup, by = "node")
+
+head(df_long_coloured)
+```
+
+I selected my colours using https://r-graph-gallery.com/color-palette-finder. Shades of blue from the `seeblau` palette were used for the "Reduced permeability" and "Efflux pump" mechanisms. Shades of yellow, orange, and red from the `amber_material` palette were used for the beta-lactamase enzyme types.
+
+```{r}
+#The two palettes that I selected my colours from:
+paletteer_d("unikn::pal_seeblau")
+paletteer_d("ggsci::amber_material")
+```
+
+I defined my colour palette. All the antibiotic subclasses were defined as "other".
+
+```{r}
+my_colour <- c(
+        "Reduced permeability" = "#A6E1F4FF",      
+        "Efflux pump" = "#0F7BA2FF",         
+        "Penicillinases" = "#FFECB3FF",
+        "Oxcillinases" = "#FFD54FFF", 
+        "IRT" = "#FFC107FF", 
+        "ESBL" = "#FFA000FF",
+        "AmpC" = "#FF6F00FF", 
+        "Carbapenemases" = "#DA291CFF",
+        "Other" = "#B3B7B8FF" )
+```
+
+I filled the links by the new mechanism variable.
+
+```{r}
+ggplot(df_long_coloured, aes(x = x, next_x = next_x, node = node, next_node = next_node,
+                    fill = mechanism)) +
+        geom_sankey(show.legend = FALSE) +
+        geom_sankey_text(aes(label = node)) +
+        scale_fill_discrete(drop = FALSE) +
+        theme_void()
+```
+
+Although I now have the same colour for each mechanism, my colour palette has not been used. `scale_fill_discrete()` was changed to `scale_fill_manual()`. The colours on the links were very bright so to make them slightly transparent I used the argument `flow.alpha`.
+
+```{r}
+ggplot(df_long_coloured, aes(x = x, next_x = next_x, node = node, next_node = next_node,
+                    fill = mechanism)) +
+        geom_sankey(show.legend = FALSE, flow.alpha = 0.7) +
+        geom_sankey_text(aes(label = node)) +
+        scale_fill_manual(values = my_colour) +
+        theme_void()
+```
+
+Next I left justified the first column labels and right justified the second column labels. This code was adapted from https://stackoverflow.com/questions/78240951/adjust-labels-on-individual-nodes-in-sankey-diagram-using-ggsankey. Here the function `stage()` was used to control the stage at which the aesthetics should be mapped.
+
+```{r}
+ggplot(df_long_coloured, aes(
+        x = x, next_x = next_x,
+        node = node, next_node = next_node,
+        fill = mechanism, label = node)) +
+        geom_sankey(flow.alpha = 0.7,
+                show.legend = FALSE) +
+        geom_sankey_text(aes(
+          x = stage(x, after_stat = x + 0.1 * case_when(
+                                                  x == 1 ~ -1,    
+                                                  x == 3 ~ 1,     
+                                                  .default = 0)),
+                    hjust = case_when(x == "gene" ~ 1,        
+                            x == "subclass" ~ 0, 
+                            .default = 0.5))) +
+        theme_void() +
+        scale_fill_manual(values = my_colour)
+```
+
+Next I reordered the nodes. See https://github.com/davidsjoberg/ggsankey/issues/7 for more explanation on how to reorder nodes.
+
+```{r order}
+df_long_coloured2 <- df_long_coloured
+
+df_long_coloured2$node <- factor(
+  df_long_coloured$node, 
+  levels = rev(c(
+    "ompC*", "Reduced permeability", "ompF*", 
+    "acrAB-tolC*", "Efflux pump", 
+    "blaTEM-1", "Penicillinases", "blaSHV-1", 
+    "blaOXA-1", "Oxcillinases", 
+    "blaTEM-30", "IRT", 
+    "blaTEM-10", "ESBL", "blaSHV-12", "blaCTX-M-15", 
+    "blaGES-3", "blaVEB-1", "blaROB-1", "blaTLA-1", 
+    "ampC*", "AmpC", 
+    "blaCMY-2", "blaDHA-1", "blaFOX-1", "blaACC-4", 
+    "blaKPC-18", "Carbapenemases", 
+    "blaOXA-48", "blaNDM-1", "blaIMP-4",
+    "NS penicillins", "ES penicillins", "Monobactams", 
+    "1G cephalosporins", "2G cephalosporins", 
+    "3G cephalosporins", "4G cephalosporins", "Carbapenems"))
+)
+
+df_long_coloured2$next_node <- factor(
+  df_long_coloured$next_node, 
+  levels = rev(c("Reduced permeability", "Efflux pump", "Penicillinases", 
+    "Oxcillinases", "IRT", "ESBL", "AmpC", "Carbapenemases",
+    "NS penicillins", "ES penicillins","Monobactams","1G cephalosporins",
+    "Carbapenems","2G cephalosporins","3G cephalosporins", "4G cephalosporins"))
+)
+```
+
+The plot with the reordered nodes.
+
+```{r}
+ggplot(df_long_coloured2, aes(
+        x = x, next_x = next_x,
+        node = node, next_node = next_node,
+        fill = mechanism, label = node)) +
+        geom_sankey(flow.alpha = 0.7,
+                show.legend = FALSE) +
+        geom_sankey_text(aes(
+          x = stage(x, after_stat = x + 0.1 *case_when(
+                                                  x == 1 ~ -1,    
+                                                  x == 3 ~ 1,     
+                                                  .default = 0)),
+                    hjust = case_when(x == "gene" ~ 1,        
+                            x == "subclass" ~ 0, 
+                            .default = 0.5))) +
+        theme_void() +
+        scale_fill_manual(values = my_colour)
+```
+
+I italicised the gene names and changed the mechanisms to a bold style using plotmath syntax (if you know of other ways to do this please let me know). First I added another column, which will be used for plotmath syntax, called label_pms. For example to generate `x` in italic font is written as italic(x). To see more on plotmath syntax see this link https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath. The `paste()` function was used to join strings together with no separator. I joined either the string `"italic('"`, `"bold('"`, or `"plain('"` with the node value (so the gene name), and the string `"')"`. Then I changed those labels with a *bla* gene so that the enzyme type was written in subscript. The function `str_replace_all()` was used to replace any text with the literal string `italic\\(` followed by `bla` with the pattern of three word characters`\\w{3}`, a literal hyphen `-`, one word character `\\w` followed by one or more digits `\\d` or (`|`) the pattern of three word characters, hyphen, multiple digits.
+
+```{r}
+#Add a new column called label_pms with the plotmath syntax for font styling
+df_long_coloured3 <- df_long_coloured2 %>%
+  mutate(label_pms = case_when(
+    x == "gene" ~ paste0("italic('", node, "')"),          
+    x == "mechanism" ~ paste0("bold('", node, "')"),       
+    x == "subclass" ~ paste0("plain('", node, "')")        
+  ))
+
+#Change the bla gene labels to subscript after bla
+df_long_coloured3 <- df_long_coloured3 %>%
+  mutate(label_pms = str_replace_all(label_pms,                                "italic\\('(bla)(\\w{3}-\\w-\\d+|\\w{3}-\\d+)'\\)", 
+                               "italic('\\1')[\\2]"))
+```
+
+Note that when you change the order of your nodes, you also need to set the levels for your labels so that they match the same order as your nodes.
+
+```{r}
+
+df_long_coloured3$label_pms <- factor(
+  df_long_coloured3$label_pms,
+  levels = rev(c(
+    "italic('ompC*')",
+    "bold('Reduced permeability')",
+    "italic('ompF*')",
+    "italic('acrAB-tolC*')",
+    "bold('Efflux pump')",
+    "italic('bla')[TEM-1]",
+    "bold('Penicillinases')",
+    "italic('bla')[SHV-1]",
+    "italic('bla')[OXA-1]",
+    "bold('Oxcillinases')",
+    "italic('bla')[TEM-30]",
+    "bold('IRT')",
+    "italic('bla')[TEM-10]",
+    "bold('ESBL')",
+    "italic('bla')[SHV-12]",
+    "italic('bla')[CTX-M-15]",
+    "italic('bla')[GES-3]",
+    "italic('bla')[VEB-1]",
+    "italic('bla')[ROB-1]",
+    "italic('bla')[TLA-1]",
+    "italic('ampC*')",
+    "bold('AmpC')",
+    "italic('bla')[CMY-2]",
+    "italic('bla')[DHA-1]",
+    "italic('bla')[FOX-1]",
+    "italic('bla')[ACC-4]",
+    "italic('bla')[KPC-18]",
+    "bold('Carbapenemases')",
+    "italic('bla')[OXA-48]",
+    "italic('bla')[NDM-1]",
+    "italic('bla')[IMP-4]",
+    # Now the antibiotic subclasses in your desired order:
+    "plain('NS penicillins')",
+    "plain('ES penicillins')",
+    "plain('Monobactams')",
+    "plain('1G cephalosporins')",
+    "plain('2G cephalosporins')",
+    "plain('3G cephalosporins')",
+    "plain('4G cephalosporins')",
+    "plain('Carbapenems')"
+  ))
+)
+```
+
+When calling the `ggplot()` function I then added the arguments `label = label_pms` and `parse = TRUE`, to parse it as plotmath syntax.
+
+```{r}
+ps <- ggplot(df_long_coloured3, aes(
+    x = x, next_x = next_x,
+    node = node, next_node = next_node,
+    fill = mechanism, label_pms = node)) +
+  geom_sankey(flow.alpha = 0.7, show.legend = FALSE) +
+  geom_sankey_text(
+    aes(label = label_pms,
+        x = stage(x, after_stat = x + 0.1 *
+          case_when(
+            x == 1 ~ -1,
+            x == 3 ~ 1,
+            .default = 0)),
+        hjust = case_when(x == "gene" ~ 1,
+                          x == "subclass" ~ 0,
+                          .default = 0.5)),
+    parse = TRUE) +
+  theme_void() +
+  scale_fill_manual(values = my_colour)
+
+ps
+```
+
+Lastly I added a caption.
+
+```{r caption1}
+caption1 <- "Beta-lactam resistance in <i>E. coli</i> predominantly occurs through the acquisition of genes encoding beta-lactamases (shades of yellow, orange, and red, according to enzyme group), but can also occur through mutations in genes encoding outer membrane proteins (light blue) or efflux pumps (dark blue); genes with mutations are marked with an asterisk. This Sankey diagram illustrates how beta-lactam resistance genes can be grouped by mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) and the subclasses of beta-lactams (NS - narrow spectrum and ES - extended spectrum penicllins; monobactams; 1G - first generation, 2G - second generation, 3G - third generation, 4G - fourth generation; and carbapenems) to which they confer resistance. The beta-lactamase enzymes have been grouped into penicillinases, oxacillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One representative gene variant is shown. However, resistance profiles can vary between different variants of the same enzyme and between different enzymes from the same group."
+
+
+psc <- ps +
+  labs(caption = caption1) +
+  theme(plot.caption.position = "plot", 
+        plot.caption = element_textbox_simple(
+          hjust = 0.5, 
+          margin = margin(t = 40, r = 5, b = 5, l = 5)))
+psc
+#ggsave("output/ggsankey_final.png", plot = psc, width = 12, height = 0.67 * 12, dpi = 300)
+```
+
+Beta-lactamase enzymes can be grouped by Ambler class (based on the amino acid sequence) or the Bush functional group (based on substrate and inhibitor activity). I'd like people to use the Sankey diagram as a reference, so I thought it would be useful to also add in a heat map to identify the Ambler class and Bush functional group of each enzyme. This will be attached to the Sankey diagram.
+
+```{r}
+cg <- read_csv("data/class_group.csv")
+
+cg_long <- cg %>%
+        pivot_longer(cols = c("Ambler class", "Functional group"),
+                     names_to = "Category", values_to = "Value")
+
+cg_long2 <- cg_long
+
+cg_long2$Enzyme <- factor(
+  cg_long2$Enzyme,
+  levels = rev(c("TEM-1", "SHV-1", "OXA-1", "TEM-30", "TEM-10", "SHV-12", "CTX-M-15", "GES-3", "ROB-1", "TLA-1", "AmpC", "CMY-2", "DHA-1", "FOX-1", "ACC-4", "KPC-18", "OXA-48", "NDM-1", "IMP-4")))
+
+ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
+        geom_tile(color = "white", show.legend = FALSE) +
+        geom_text(aes(label = Value), color = "white", size = 4) +      
+        coord_equal() +
+        scale_fill_paletteer_d("impressionist.colors::la_recolte_des_foins_eragny") +
+        scale_x_discrete(position = "top", labels = label_wrap_gen(10)) +
+        theme_minimal() +
+        theme(axis.title = element_blank(),
+                axis.text.y = element_text(size = 8),
+
+                              panel.grid = element_blank()) 
+
+
+```
+
+The column widths were too narrow to fit the values and the axis title. So I removed `coord_equal()`, which makes the the length and the width the same for each tile. Instead I used `coord_fixed()` to set the ratio.
+
+```{r}
+ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
+        geom_tile(color = "white", show.legend = FALSE) +
+        geom_text(aes(label = Value), color = "white", size = 4) +      
+        scale_fill_paletteer_d("impressionist.colors::la_recolte_des_foins_eragny") +
+        scale_x_discrete(position = "top", labels = label_wrap_gen(10)) +
+        coord_fixed(ratio = 0.3) +
+        theme_minimal(base_size = 6) +
+        theme(axis.title = element_blank(),
+                axis.text.y = element_text(size = 8),
+              panel.grid = element_blank()) 
+
+ph
+```
+
+I also generated a caption for this plot
+
+```{r caption2}
+caption2 <- "Beta-lactamases can be grouped according to their Ambler class and Bush functional group. Ambler classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)."
+
+phc <- ph + labs(caption = caption2) +
+  theme(plot.caption.position = "plot", 
+        plot.caption = element_textbox_simple(
+          lineheight = 0.5,
+          hjust = 0,
+          margin = margin(t = 50, r = 10, b = 5, l = 10)))
+        #plot.margin = margin(t = 5, r = 10, b = 40, l = 10))
+
+#ggsave("output/heatmap_final.png", plot = phc, width = 12, height = 0.67 * 12, dpi = 300)
+```
+
+I joined the Sankey diagram and the heatmap together using the patchwork library
+
+```{r patchwork}
+p_join <- phc + psc
+```
+
+Next I added the title and subtitle. For adding titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
+
+```{r title}
+title <- "Beta-lactam resistance in <i>Escherichia coli</i>"
+```
+
+Finally I added my social media and business icons. This code was adapted from Rennie, Nicola. 2023. “Adding Social Media Icons to Charts with {Ggplot2}.” July 27, 2023. https://nrennie.rbind.io/blog/adding-social-media-icons-ggplot2/.
+
+```{r icons}
+
+sysfonts::font_add_google(name = "Baloo 2", family = "baloo")
+sysfonts::font_add(
+  family = "Font Awesome 7 Brands",
+  regular = "fonts/fontawesome-free-7.1.0/otfs/Font-Awesome-7-Brands-Regular-400.otf"
+)
+showtext_auto()  # Only need this ONCE, after all fonts are added
+showtext_opts(dpi = 300)
+
+brand_font <- "baloo"
+brand_color <- "#55692f"
+
+github_icon <- "&#xf09b"
+github_username <- "sburgess2"
+linkedin_icon <- "&#xf08c"
+linkedin_username <- "sara-burgess"
+
+#img = image, src = source, span is a span tag for inline styling
+social_caption <- glue(
+  "<img src='logo/GreenhoodLogoMark.png' width='20' height='14.84'/> <span style='color: {brand_color};'><strong> Sara Burgess</strong></span> |",
+  "<span style='font-family:\"Font Awesome 7 Brands\";'>{github_icon};</span> ",
+  "<span style='color: #000000'>{github_username}</span> | ",
+  "<span style='font-family:\"Font Awesome 7 Brands\";'>{linkedin_icon};</span> ",
+  "<span style='color: #000000'>{linkedin_username}</span>"
+)
+```
+
+This is what my caption looks like without the plot. As described in Nicole Rennie's blog the `element_text_box_simple()` function is added so it can enable Markdown and/or HTML code. The `element_text_box()` function is very similar but it does not have any default values.
+
+```{r}
+ggplot() +
+  labs(caption = social_caption, title = title) +
+  theme(plot.caption = element_textbox_simple(),
+        plot.title = element_textbox_simple())
+```
+
+Next I added my caption to the plot. I have used `plot_annotation()` to add the caption because, I'm using the library patchwork to join the two plots together.
+
+```{r}
+#| label: final_figure
+#| fig-width: 18
+#| fig-height: 10
+#| warning: false
+#Note this results in a caption twice under each plot
+p_final <- p_join +
+  plot_annotation(caption = social_caption, title = title) &
+  theme(
+    plot.caption = element_textbox_simple(
+  margin = margin(t = 30, r = 10, b = 20, l = 5),
+  size = 8),
+    plot.title = element_textbox_simple(),
+    base_size = 6)
+
+p_final
+
+#ggsave("output/hm_ggsankey_final.png", plot = p_final, width = 12, height = 0.67 * 12, dpi = 300)
+```
