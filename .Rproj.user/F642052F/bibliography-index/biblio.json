@@ -165,87 +165,6 @@
             "volume": "15"
         },
         {
-            "DOI": "10.1007/s00248-025-02502-7",
-            "URL": "https://link.springer.com/10.1007/s00248-025-02502-7",
-            "author": [
-                {
-                    "family": "Gomi",
-                    "given": "Ryota"
-                },
-                {
-                    "family": "Adachi",
-                    "given": "Fumie"
-                }
-            ],
-            "container-title": "Microbial Ecology",
-            "id": "gomi2025a",
-            "issue": "1",
-            "issued": {
-                "date-parts": [
-                    [
-                        2025,
-                        2,
-                        17
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "6",
-            "title": "Quinolone Resistance Genes qnr, aac(6’)-Ib-cr, oqxAB, and qepA in Environmental Escherichia coli: Insights into Their Genetic Contexts from Comparative Genomics",
-            "title-short": "Quinolone Resistance Genes qnr, aac(6’)-Ib-cr, oqxAB, and qepA in Environmental Escherichia coli",
-            "type": "article-journal",
-            "volume": "88"
-        },
-        {
-            "DOI": "10.1080/1040841X.2025.2492156",
-            "URL": "https://www.tandfonline.com/doi/full/10.1080/1040841X.2025.2492156",
-            "author": [
-                {
-                    "family": "Kerek",
-                    "given": "Ádám"
-                },
-                {
-                    "family": "Román",
-                    "given": "István"
-                },
-                {
-                    "family": "Szabó",
-                    "given": "Ábel"
-                },
-                {
-                    "family": "Kovács",
-                    "given": "Dóra"
-                },
-                {
-                    "family": "Kardos",
-                    "given": "Gábor"
-                },
-                {
-                    "family": "Kovács",
-                    "given": "László"
-                },
-                {
-                    "family": "Jerzsele",
-                    "given": "Ákos"
-                }
-            ],
-            "container-title": "Critical Reviews in Microbiology",
-            "id": "kerek2025a",
-            "issued": {
-                "date-parts": [
-                    [
-                        2025,
-                        4,
-                        18
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "1-35",
-            "title": "Antibiotic resistance genes in <i>Escherichia coli</i>  literature review",
-            "type": "article-journal"
-        },
-        {
             "DOI": "10.1128/AAC.42.1.88",
             "URL": "https://journals.asm.org/doi/10.1128/AAC.42.1.88",
             "author": [
@@ -288,247 +207,162 @@
             "volume": "42"
         },
         {
-            "DOI": "10.1371/journal.ppat.1009663",
-            "URL": "https://dx.plos.org/10.1371/journal.ppat.1009663",
+            "DOI": "10.1128/aem.01791-23",
+            "URL": "https://journals.asm.org/doi/10.1128/aem.01791-23",
             "author": [
                 {
-                    "family": "Le",
-                    "given": "Vuong Van Hung"
+                    "family": "Mounsey",
+                    "given": "Oliver"
                 },
                 {
-                    "family": "Rakonjac",
-                    "given": "Jasna"
+                    "family": "Marchetti",
+                    "given": "Laura"
+                },
+                {
+                    "family": "Parada",
+                    "given": "Julián"
+                },
+                {
+                    "family": "Alarcón",
+                    "given": "Laura V."
+                },
+                {
+                    "family": "Aliverti",
+                    "given": "Florencia"
+                },
+                {
+                    "family": "Avison",
+                    "given": "Matthew B."
+                },
+                {
+                    "family": "Ayala",
+                    "given": "Carlos S."
+                },
+                {
+                    "family": "Ballesteros",
+                    "given": "Cristina"
+                },
+                {
+                    "family": "Best",
+                    "given": "Caroline M."
+                },
+                {
+                    "family": "Bettridge",
+                    "given": "Judy"
+                },
+                {
+                    "family": "Buchamer",
+                    "given": "Andrea"
+                },
+                {
+                    "family": "Buldain",
+                    "given": "Daniel"
+                },
+                {
+                    "family": "Carranza",
+                    "given": "Alicia"
+                },
+                {
+                    "family": "Corti Isgro",
+                    "given": "Maite"
+                },
+                {
+                    "family": "Demeritt",
+                    "given": "David"
+                },
+                {
+                    "family": "Escobar",
+                    "given": "Maria Paula"
+                },
+                {
+                    "family": "Gortari Castillo",
+                    "given": "Lihuel"
+                },
+                {
+                    "family": "Jaureguiberry",
+                    "given": "María"
+                },
+                {
+                    "family": "Lucas",
+                    "given": "Mariana F."
+                },
+                {
+                    "family": "Madoz",
+                    "given": "L. Vanina"
+                },
+                {
+                    "family": "Marconi",
+                    "given": "María José"
+                },
+                {
+                    "family": "Moiso",
+                    "given": "Nicolás"
+                },
+                {
+                    "family": "Nievas",
+                    "given": "Hernán D."
+                },
+                {
+                    "family": "Ramirez Montes De Oca",
+                    "given": "Marco A."
+                },
+                {
+                    "family": "Reding",
+                    "given": "Carlos"
+                },
+                {
+                    "family": "Reyher",
+                    "given": "Kristen K."
+                },
+                {
+                    "family": "Vass",
+                    "given": "Lucy"
+                },
+                {
+                    "family": "Williams",
+                    "given": "Sara"
+                },
+                {
+                    "family": "Giraudo",
+                    "given": "José"
+                },
+                {
+                    "family": "De La Sota",
+                    "given": "R. Luzbel"
+                },
+                {
+                    "family": "Mestorino",
+                    "given": "Nora"
+                },
+                {
+                    "family": "Moredo",
+                    "given": "Fabiana A."
+                },
+                {
+                    "family": "Pellegrino",
+                    "given": "Matías"
                 }
             ],
-            "container-title": "PLOS Pathogens",
+            "container-title": "Applied and Environmental Microbiology",
             "editor": [
                 {
-                    "family": "Leong",
-                    "given": "John M."
+                    "family": "Dozois",
+                    "given": "Charles M."
                 }
             ],
-            "id": "le2021a",
-            "issue": "7",
+            "id": "mounsey2024",
             "issued": {
                 "date-parts": [
                     [
-                        2021,
-                        7,
-                        8
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "e1009663",
-            "title": "Nitrofurans: Revival of an “old” drug class in the fight against antibiotic resistance",
-            "title-short": "Nitrofurans",
-            "type": "article-journal",
-            "volume": "17"
-        },
-        {
-            "DOI": "10.1128/AAC.42.1.88",
-            "URL": "https://journals.asm.org/doi/10.1128/AAC.42.1.88",
-            "author": [
-                {
-                    "family": "Vedantam",
-                    "given": "Gayatri"
-                },
-                {
-                    "family": "Guay",
-                    "given": "Gordon G."
-                },
-                {
-                    "family": "Austria",
-                    "given": "Natasha E."
-                },
-                {
-                    "family": "Doktor",
-                    "given": "Stella Z."
-                },
-                {
-                    "family": "Nichols",
-                    "given": "Brian P."
-                }
-            ],
-            "container-title": "Antimicrobial Agents and Chemotherapy",
-            "id": "vedantam1998a",
-            "issue": "1",
-            "issued": {
-                "date-parts": [
-                    [
-                        1998,
-                        1
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "88-93",
-            "title": "Characterization of Mutations Contributing to Sulfathiazole Resistance in <i>Escherichia coli</i>",
-            "type": "article-journal",
-            "volume": "42"
-        },
-        {
-            "DOI": "10.3201/eid1510.090696",
-            "URL": "http://wwwnc.cdc.gov/eid/article/15/10/09-0696_article.htm",
-            "author": [
-                {
-                    "family": "Nguyen",
-                    "given": "Minh Chau Phuc"
-                },
-                {
-                    "family": "Woerther",
-                    "given": "Paul-Louis"
-                },
-                {
-                    "family": "Bouvet",
-                    "given": "Mathilde"
-                },
-                {
-                    "family": "Andremont",
-                    "given": "Antoine"
-                },
-                {
-                    "family": "Leclercq",
-                    "given": "Roland"
-                },
-                {
-                    "family": "Canu",
-                    "given": "Annie"
-                }
-            ],
-            "container-title": "Emerging Infectious Diseases",
-            "id": "nguyen2009a",
-            "issue": "10",
-            "issued": {
-                "date-parts": [
-                    [
-                        2009,
-                        10
-                    ]
-                ]
-            },
-            "page": "1648-1650",
-            "title": "<i>Escherichia coli</i> as reservoir for macrolide resistance genes",
-            "type": "article-journal",
-            "volume": "15"
-        },
-        {
-            "DOI": "10.1371/journal.ppat.1009663",
-            "URL": "https://dx.plos.org/10.1371/journal.ppat.1009663",
-            "author": [
-                {
-                    "family": "Le",
-                    "given": "Vuong Van Hung"
-                },
-                {
-                    "family": "Rakonjac",
-                    "given": "Jasna"
-                }
-            ],
-            "container-title": "PLOS Pathogens",
-            "editor": [
-                {
-                    "family": "Leong",
-                    "given": "John M."
-                }
-            ],
-            "id": "le2021b",
-            "issue": "7",
-            "issued": {
-                "date-parts": [
-                    [
-                        2021,
-                        7,
-                        8
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "e1009663",
-            "title": "Nitrofurans: Revival of an “old” drug class in the fight against antibiotic resistance",
-            "title-short": "Nitrofurans",
-            "type": "article-journal",
-            "volume": "17"
-        },
-        {
-            "DOI": "10.1007/s00248-025-02502-7",
-            "URL": "https://link.springer.com/10.1007/s00248-025-02502-7",
-            "author": [
-                {
-                    "family": "Gomi",
-                    "given": "Ryota"
-                },
-                {
-                    "family": "Adachi",
-                    "given": "Fumie"
-                }
-            ],
-            "container-title": "Microbial Ecology",
-            "id": "gomi2025b",
-            "issue": "1",
-            "issued": {
-                "date-parts": [
-                    [
-                        2025,
+                        2024,
                         2,
-                        17
+                        9
                     ]
                 ]
             },
             "language": "en",
-            "page": "6",
-            "title": "Quinolone Resistance Genes qnr, aac(6’)-Ib-cr, oqxAB, and qepA in Environmental Escherichia coli: Insights into Their Genetic Contexts from Comparative Genomics",
-            "title-short": "Quinolone Resistance Genes qnr, aac(6’)-Ib-cr, oqxAB, and qepA in Environmental Escherichia coli",
-            "type": "article-journal",
-            "volume": "88"
-        },
-        {
-            "DOI": "10.1080/1040841X.2025.2492156",
-            "URL": "https://www.tandfonline.com/doi/full/10.1080/1040841X.2025.2492156",
-            "author": [
-                {
-                    "family": "Kerek",
-                    "given": "Ádám"
-                },
-                {
-                    "family": "Román",
-                    "given": "István"
-                },
-                {
-                    "family": "Szabó",
-                    "given": "Ábel"
-                },
-                {
-                    "family": "Kovács",
-                    "given": "Dóra"
-                },
-                {
-                    "family": "Kardos",
-                    "given": "Gábor"
-                },
-                {
-                    "family": "Kovács",
-                    "given": "László"
-                },
-                {
-                    "family": "Jerzsele",
-                    "given": "Ákos"
-                }
-            ],
-            "container-title": "Critical Reviews in Microbiology",
-            "id": "kerek2025b",
-            "issued": {
-                "date-parts": [
-                    [
-                        2025,
-                        4,
-                        18
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "1-35",
-            "title": "Antibiotic resistance genes in <i>Escherichia coli</i>  literature review",
+            "page": "e01791-23",
+            "title": "Genomic epidemiology of third-generation cephalosporin-resistant <i>Escherichia coli</i> from Argentinian pig and dairy farms reveals animal-specific patterns of co-resistance and resistance mechanisms",
             "type": "article-journal"
         }
     ],

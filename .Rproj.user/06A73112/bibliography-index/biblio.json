@@ -205,6 +205,165 @@
             "title": "Characterization of Mutations Contributing to Sulfathiazole Resistance in <i>Escherichia coli</i>",
             "type": "article-journal",
             "volume": "42"
+        },
+        {
+            "DOI": "10.1128/aem.01791-23",
+            "URL": "https://journals.asm.org/doi/10.1128/aem.01791-23",
+            "author": [
+                {
+                    "family": "Mounsey",
+                    "given": "Oliver"
+                },
+                {
+                    "family": "Marchetti",
+                    "given": "Laura"
+                },
+                {
+                    "family": "Parada",
+                    "given": "Julián"
+                },
+                {
+                    "family": "Alarcón",
+                    "given": "Laura V."
+                },
+                {
+                    "family": "Aliverti",
+                    "given": "Florencia"
+                },
+                {
+                    "family": "Avison",
+                    "given": "Matthew B."
+                },
+                {
+                    "family": "Ayala",
+                    "given": "Carlos S."
+                },
+                {
+                    "family": "Ballesteros",
+                    "given": "Cristina"
+                },
+                {
+                    "family": "Best",
+                    "given": "Caroline M."
+                },
+                {
+                    "family": "Bettridge",
+                    "given": "Judy"
+                },
+                {
+                    "family": "Buchamer",
+                    "given": "Andrea"
+                },
+                {
+                    "family": "Buldain",
+                    "given": "Daniel"
+                },
+                {
+                    "family": "Carranza",
+                    "given": "Alicia"
+                },
+                {
+                    "family": "Corti Isgro",
+                    "given": "Maite"
+                },
+                {
+                    "family": "Demeritt",
+                    "given": "David"
+                },
+                {
+                    "family": "Escobar",
+                    "given": "Maria Paula"
+                },
+                {
+                    "family": "Gortari Castillo",
+                    "given": "Lihuel"
+                },
+                {
+                    "family": "Jaureguiberry",
+                    "given": "María"
+                },
+                {
+                    "family": "Lucas",
+                    "given": "Mariana F."
+                },
+                {
+                    "family": "Madoz",
+                    "given": "L. Vanina"
+                },
+                {
+                    "family": "Marconi",
+                    "given": "María José"
+                },
+                {
+                    "family": "Moiso",
+                    "given": "Nicolás"
+                },
+                {
+                    "family": "Nievas",
+                    "given": "Hernán D."
+                },
+                {
+                    "family": "Ramirez Montes De Oca",
+                    "given": "Marco A."
+                },
+                {
+                    "family": "Reding",
+                    "given": "Carlos"
+                },
+                {
+                    "family": "Reyher",
+                    "given": "Kristen K."
+                },
+                {
+                    "family": "Vass",
+                    "given": "Lucy"
+                },
+                {
+                    "family": "Williams",
+                    "given": "Sara"
+                },
+                {
+                    "family": "Giraudo",
+                    "given": "José"
+                },
+                {
+                    "family": "De La Sota",
+                    "given": "R. Luzbel"
+                },
+                {
+                    "family": "Mestorino",
+                    "given": "Nora"
+                },
+                {
+                    "family": "Moredo",
+                    "given": "Fabiana A."
+                },
+                {
+                    "family": "Pellegrino",
+                    "given": "Matías"
+                }
+            ],
+            "container-title": "Applied and Environmental Microbiology",
+            "editor": [
+                {
+                    "family": "Dozois",
+                    "given": "Charles M."
+                }
+            ],
+            "id": "mounsey2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024,
+                        2,
+                        9
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "e01791-23",
+            "title": "Genomic epidemiology of third-generation cephalosporin-resistant <i>Escherichia coli</i> from Argentinian pig and dairy farms reveals animal-specific patterns of co-resistance and resistance mechanisms",
+            "type": "article-journal"
         }
     ],
     "project_biblios": []
