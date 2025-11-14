@@ -1,6 +1,6 @@
-Gene,Enzyme,Amber class,Functional group
-blaTEM-1,TEM-1,A,2a
-blaSHV-1,SHV-1,A,2a
+Gene,Enzyme,Ambler class,Functional group
+blaTEM-1,TEM-1,A,2b
+blaSHV-1,SHV-1,A,2b
 blaOXA-1,OXA-1,D,2d
 blaTEM-30,TEM-30,A,2br
 blaTEM-10,TEM-10,A,2be
@@ -17,4 +17,4 @@ blaACC-4,ACC-4,C,1
 blaKPC-18,KPC-18,A,2f
 blaOXA-48,OXA-48,D,2df
 blaNDM-1,NDM-1,B1,3a
-blaIMP-4,IMP-4,A,2f
+blaIMP-4,IMP-4,B1,3a
