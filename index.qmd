@@ -1,7 +1,7 @@
 ---
 format: html
 editor: visual
-bibliography: references2.bib
+bibliography: references3.bib
 csl: nature-communications.csl
 nocite: |
    @*
@@ -570,7 +570,7 @@ ps <- ggplot(df_long_coloured3, aes(
 ps
 ```
 
-Lastly I added a caption.
+Lastly I added a caption. For adding captions, titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
 
 ```{r caption1}
 caption1 <- "Beta-lactam resistance in <i>E. coli</i> predominantly occurs through the acquisition of genes encoding beta-lactamases (shades of yellow, orange, and red, according to enzyme group), but can also occur through mutations in genes encoding outer membrane proteins (light blue) or efflux pumps (dark blue); genes with mutations are marked with an asterisk. This Sankey diagram illustrates how beta-lactam resistance genes can be grouped by mechanism (reduced permeability, efflux pump and enzymatic inactivation by different beta-lactamases) and the subclasses of beta-lactams (NS - narrow spectrum and ES - extended spectrum penicllins; monobactams; 1G - first generation, 2G - second generation, 3G - third generation, 4G - fourth generation; and carbapenems) to which they confer resistance. The beta-lactamase enzymes have been grouped into penicillinases, oxacillinases, IRT (inhibitor resistant TEM), ESBL, AmpC, and carbapenemases. One representative gene variant is shown. However, resistance profiles can vary between different variants of the same enzyme and between different enzymes from the same group."
@@ -585,137 +585,6 @@ psc <- ps +
 psc
 ```
 
-Beta-lactamase enzymes can be grouped by Ambler class (based on the amino acid sequence) or the Bush functional group (based on substrate and inhibitor activity). I'd like people to use the Sankey diagram as a reference, so I thought it would be useful to also add in a heat map to identify the Ambler class and Bush functional group of each enzyme. This will be attached to the Sankey diagram.
+To attribute this work please cite:
 
-```{r}
-cg <- read_csv("data/class_group.csv")
-
-cg_long <- cg %>%
-        pivot_longer(cols = c("Ambler class", "Functional group"),
-                     names_to = "Category", values_to = "Value")
-
-cg_long2 <- cg_long
-
-cg_long2$Enzyme <- factor(
-  cg_long2$Enzyme,
-  levels = rev(c("TEM-1", "SHV-1", "OXA-1", "TEM-30", "TEM-10", "SHV-12", "CTX-M-15", "GES-3", "ROB-1", "TLA-1", "AmpC", "CMY-2", "DHA-1", "FOX-1", "ACC-4", "KPC-18", "OXA-48", "NDM-1", "IMP-4")))
-
-ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
-        geom_tile(color = "white", show.legend = FALSE) +
-        geom_text(aes(label = Value), color = "white", size = 4) +      
-        coord_equal() +
-        scale_fill_paletteer_d("impressionist.colors::la_recolte_des_foins_eragny") +
-        scale_x_discrete(position = "top", labels = label_wrap_gen(10)) +
-        theme_minimal() +
-        theme(axis.title = element_blank(),
-                axis.text.y = element_text(size = 8),
-
-                              panel.grid = element_blank()) 
-
-
-```
-
-The column widths were too narrow to fit the values and the axis title. So I removed `coord_equal()`, which makes the the length and the width the same for each tile. Instead I used `coord_fixed()` to set the ratio.
-
-```{r}
-ph <- ggplot(data = cg_long2, aes(x = Category, y = Enzyme, fill = Value)) +
-        geom_tile(color = "white", show.legend = FALSE) +
-        geom_text(aes(label = Value), color = "white", size = 4) +      
-        scale_fill_paletteer_d("impressionist.colors::la_recolte_des_foins_eragny") +
-        scale_x_discrete(position = "top", labels = label_wrap_gen(10)) +
-        coord_fixed(ratio = 0.3) +
-        theme_minimal(base_size = 6) +
-        theme(axis.title = element_blank(),
-                axis.text.y = element_text(size = 8),
-              panel.grid = element_blank()) 
-
-ph
-```
-
-I also generated a caption for this plot. For more information on adding and formatting captions, subtitiles and titles I would recommend Nicola Rennie's book "Introducing the Art of Visualization with GGplot2".
-
-```{r caption2}
-caption2 <- "Beta-lactamases can be grouped according to their Ambler class and Bush functional group. Ambler classes are based on amino acid sequence similarity (doi: 10.1042/bj2760269), and Bush functional groups are based on substrate and inhibitor profiles (doi:10.1128/AAC.01009-09)."
-
-phc <- ph + labs(caption = caption2) +
-  theme(plot.caption.position = "plot", 
-        plot.caption = element_textbox_simple(
-          lineheight = 0.5,
-          hjust = 0,
-          margin = margin(t = 50, r = 10, b = 5, l = 10)))
-
-phc
-```
-
-I joined the Sankey diagram and the heatmap together using the patchwork library
-
-```{r patchwork}
-p_join <- phc + psc
-```
-
-Next I added the title and subtitle. For adding titles and customising ggplots I would recommend Nicola Rennie's book 'The Art of Data Visualization with ggplot2"
-
-```{r title}
-title <- "Beta-lactam resistance in <i>Escherichia coli</i>"
-```
-
-Finally I added my social media and business icons. This code was adapted from Rennie, Nicola. 2023. “Adding Social Media Icons to Charts with {Ggplot2}.” July 27, 2023. https://nrennie.rbind.io/blog/adding-social-media-icons-ggplot2/.
-
-```{r icons}
-
-sysfonts::font_add_google(name = "Baloo 2", family = "baloo")
-sysfonts::font_add(
-  family = "Font Awesome 7 Brands",
-  regular = "fonts/fontawesome-free-7.1.0/otfs/Font-Awesome-7-Brands-Regular-400.otf"
-)
-showtext_auto()  # Only need this ONCE, after all fonts are added
-showtext_opts(dpi = 300)
-
-brand_font <- "baloo"
-brand_color <- "#55692f"
-
-github_icon <- "&#xf09b"
-github_username <- "sburgess2"
-linkedin_icon <- "&#xf08c"
-linkedin_username <- "sara-burgess"
-
-#img = image, src = source, span is a span tag for inline styling
-social_caption <- glue(
-  "<img src='logo/GreenhoodLogoMark.png' width='20' height='14.84'/> <span style='color: {brand_color};'><strong> Sara Burgess</strong></span> |",
-  "<span style='font-family:\"Font Awesome 7 Brands\";'>{github_icon};</span> ",
-  "<span style='color: #000000'>{github_username}</span> | ",
-  "<span style='font-family:\"Font Awesome 7 Brands\";'>{linkedin_icon};</span> ",
-  "<span style='color: #000000'>{linkedin_username}</span>"
-)
-```
-
-This is what my caption looks like without the plot. As described in Nicole Rennie's blog the `element_text_box_simple()` function is added so it can enable Markdown and/or HTML code. The `element_text_box()` function is very similar but it does not have any default values.
-
-```{r}
-ggplot() +
-  labs(caption = social_caption, title = title) +
-  theme(plot.caption = element_textbox_simple(),
-        plot.title = element_textbox_simple())
-```
-
-Next I added my caption to the plot. I have used `plot_annotation()` to add the caption because, I'm using the library patchwork to join the two plots together.
-
-```{r}
-#| label: final_figure
-#| fig-width: 18
-#| fig-height: 10
-#| warning: false
-#Note this results in a caption twice under each plot
-p_final <- p_join +
-  plot_annotation(caption = social_caption, title = title) &
-  theme(
-    plot.caption = element_textbox_simple(
-  margin = margin(t = 30, r = 10, b = 20, l = 5),
-  size = 8),
-    plot.title = element_textbox_simple(),
-    base_size = 6)
-
-p_final
-```
-
-To attribute this work please cite: Burgess, Sara. 2025. "Generating and polishing Sankey diagrams in R." 14 November, 2025. https://sburgess2.github.io/sankey_amr/
+Burgess, Sara. 2025. "Generating and polishing Sankey diagrams in R." 14 November, 2025. https://sburgess2.github.io/sankey_amr/
