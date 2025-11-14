@@ -1,4 +1,11 @@
 project:
   title: "sankey_amr"
+  type: website
+  output-dir: docs
 
-editor: visual
+website: 
+  title: "Generating and polishing Sankey diagrams in R"
+  
+format:
+  html:
+    css: styles.css
