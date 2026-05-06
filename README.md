@@ -1,5 +1,7 @@
 # Generating and Polishing Sankey Diagrams in R
 
+![](output/sankey_arg.png)
+
 ![](output/hm_ggsankey_final.png)
 
 Visualising antimicrobial resistance (AMR) genes in *Escherichia coli* using interactive and static Sankey diagrams built in R.
